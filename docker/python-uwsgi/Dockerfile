@@ -12,7 +12,7 @@ FROM python:3.6-alpine as RELEASE
 EXPOSE 8080
 WORKDIR /app
 
-COPY ./app /app
+COPY ./app-backend /app
 COPY ./docker/python-uwsgi/uwsgi.ini /app/uwsgi.ini
 COPY --from=BASE /root/wheels /root/wheels
 

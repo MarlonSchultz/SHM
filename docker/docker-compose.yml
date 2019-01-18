@@ -1,13 +1,23 @@
 version: '3.5'
 
 services:
+  typescript-nginx:
+    container_name: typescript-nginx
+    build:
+      context: ../
+      dockerfile: docker/typescript-nginx/Dockerfile
+    ports:
+      - 8082:80
+    depends_on:
+      - python-nginx
+
   python-nginx:
     container_name: python-nginx
     build:
       context: ./
       dockerfile: python-nginx/Dockerfile
     ports:
-      - 80:80
+      - 8081:80
     depends_on:
       - python-uwsgi
 
