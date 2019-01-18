@@ -2,4 +2,7 @@
 .idea
 
 # No virtual environment, requirements.txt is sufficient
-app-backend/venv
+venv
+
+# No python caches
+__pycache__

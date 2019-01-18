@@ -1,3 +1,4 @@
+# Dependencies
 FROM node:latest as build-deps
 
 WORKDIR /app
@@ -6,6 +7,7 @@ RUN yarn
 COPY app-frontend/. ./
 RUN yarn build
 
+# Actual image
 FROM nginx:latest
 COPY --from=build-deps /app/build /usr/share/nginx/html
 EXPOSE 80
