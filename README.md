@@ -37,7 +37,7 @@ docker-compose stop
 To keep dependencies between python applications clean, it is recommend to use python virtual environments. To install `virtualenv`, run the following command:
  
 ```bash
-sudo pip3 virtualenv
+sudo pip3 install virtualenv
 ```
  
 `sudo` is required so the flask binary is available system-wide. Installing in user-space requires you to add the binary manually to your path. `virtualenv` might also be available as a package provided by your linux distribution.  
