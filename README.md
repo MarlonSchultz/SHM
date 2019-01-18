@@ -5,16 +5,20 @@ For the Frontend TypeScript and ReactJs are used.
 There are 4 different Docker Containers:
 
 **python-uwsgi**  
-The flask application bundled with a uWSGI server as middleware to allow communication between flask and Nginx.
+The flask application bundled with a uWSGI server as middleware to allow communication between flask and Nginx.  
+The uWSGI server is available on port `8080` (but unable to comprehend http requests with its current setup)
  
 **python-nginx**  
-The Nginx server which handles requests from the frontend and passes them to the uWSGI server.
+The Nginx server which handles requests from the frontend and passes them to the uWSGI server.  
+The Nginx server is available via `localhost:8081` and should respond with `alive`, the health check.
  
 **tyepscript-nginx**  
-The Nginx server which handles requests from the outside world.
+The Nginx server which handles requests from the outside world.  
+The Nginx server is available via `localhost:8082` and should respond with the ReactJS demo page.
  
 **postgres**  
 The PostgreSQL database.
+The PostgreSQL database is available via port `5432`.
 
 ## Docker
 ### Dockerfiles
