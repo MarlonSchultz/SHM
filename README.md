@@ -65,7 +65,7 @@ pip3 freeze > requirements.txt
 If you don't need the full stack for your development, you can use flask's development server. To start it, run the following commands (with your virtual environment activated):
 
 ```bash
-export FLASK_APP=microblog.py  # Required only once for each terminal session
+export FLASK_APP=main.py  # Required only once for each terminal session
 flask run
 ```
 
