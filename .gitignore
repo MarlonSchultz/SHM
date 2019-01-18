@@ -1,2 +1,5 @@
 # No IntelliJ Stuff
 .idea
+
+# No virtual environment, requirements.txt is sufficient
+app/venv
