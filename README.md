@@ -17,7 +17,6 @@ The Nginx server which handles requests from the outside world.
 The Nginx server is available via `localhost:8082` and should respond with the ReactJS demo page.
  
 **postgres**  
-The PostgreSQL database.
 The PostgreSQL database is available via port `5432`.
 
 ## Docker
