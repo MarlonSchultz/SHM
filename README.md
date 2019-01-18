@@ -34,7 +34,7 @@ docker-compose stop
  
 ## BackEnd Development
 ### Virtual Environment
-To keep dependencies between python applications clean, it is recommend to use python virtual environments. To install `virtualenv`, run the following command:
+To keep dependencies between python applications clean, it is recommended to use python virtual environments. To install `virtualenv`, run the following command:
  
 ```bash
 sudo pip3 install virtualenv
@@ -62,9 +62,10 @@ pip3 freeze > requirements.txt
 ```
 
 ### Development Server
-If you don't need the full stack for your development, you can use flask's development server. To start it, run the following command (with your virtual environment activated):
+If you don't need the full stack for your development, you can use flask's development server. To start it, run the following commands (with your virtual environment activated):
 
 ```bash
+export FLASK_APP=microblog.py  # Required only once for each terminal session
 flask run
 ```
 
