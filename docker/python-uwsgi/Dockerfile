@@ -9,7 +9,6 @@ RUN pip wheel --wheel-dir=/root/wheels cryptography
 # Actual Image
 FROM python:3.6-alpine
 
-EXPOSE 8080
 WORKDIR /app
 
 COPY ./app-backend /app
