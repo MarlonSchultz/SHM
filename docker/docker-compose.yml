@@ -27,8 +27,6 @@ services:
       context: ../
       dockerfile: docker/python-uwsgi/Dockerfile
     env_file: postgres/database.conf
-    expose:
-      - 8080
     depends_on:
       - postgres
 
@@ -39,7 +37,10 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - db_volume:/var/lib/postgresql
+      - ../postgres:/var/lib/postgresql
 
-volumes:
-  db_volume:
+  adminer:
+   image: adminer
+   ports:
+     - 8080:8080
+

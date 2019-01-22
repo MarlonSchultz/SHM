@@ -16,6 +16,9 @@ The Nginx server is available via `localhost:8081` and should respond with `aliv
 The Nginx server which handles requests from the outside world.  
 The Nginx server is available via `localhost:8082` and should respond with the ReactJS demo page.
  
+**adminer**
+Database management webtool. Open localhost:8080 to connect to database. Use credentials from database.conf
+
 **postgres**  
 The PostgreSQL database is available via port `5432`.
 
