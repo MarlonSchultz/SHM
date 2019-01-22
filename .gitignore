@@ -5,7 +5,7 @@
 venv
 
 # No python caches
-__pycache_
+__pycache__
 
 # No "persisted" postgres data_
 postgres/data/*
