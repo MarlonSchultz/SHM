@@ -34,7 +34,29 @@ docker-compose build
 docker-compose up -d  
 docker-compose stop
 ```
+## Kubernetes
  
+Install kubernetes on your machine
+
+Use kubectl to connect to your cluster
+```bash
+kubectl proxy
+```
+
+Enter URL in browser to access Dashboard
+http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/overview?namespace=default
+
+Get Login token from cli
+
+```bash
+kubectl -n kube-system get secret 
+```
+
+Use default token to login to dashboard
+```bash
+kubectl -n kube-system describe secrets default-token-k5dzj
+```
+
 ## BackEnd Development
 ### Virtual Environment
 To keep dependencies between python applications clean, it is recommended to use python virtual environments. To install `virtualenv`, run the following command:
