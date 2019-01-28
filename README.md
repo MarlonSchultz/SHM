@@ -36,26 +36,7 @@ docker-compose stop
 ```
 ## Kubernetes
  
-Install kubernetes on your machine
-
-Use kubectl to connect to your cluster
-```bash
-kubectl proxy
-```
-
-Enter URL in browser to access Dashboard
-http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/overview?namespace=default
-
-Get Login token from cli
-
-```bash
-kubectl -n kube-system get secret 
-```
-
-Use default token to login to dashboard
-```bash
-kubectl -n kube-system describe secrets default-token-k5dzj
-```
+This manual uses minikube. All steps to deploy to a minikube cluster are located within docker/deployInMinikube.sh
 
 ## BackEnd Development
 ### Virtual Environment
