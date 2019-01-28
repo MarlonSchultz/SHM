@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-nginx
+  labels:
+    app: python-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-nginx
+  template:
+    metadata:
+      labels:
+        app: python-nginx
+    spec:
+      containers:
+      - name: python-nginx
+        image: localhost:5000/python-nginx
+        ports:
+        - containerPort: 80
