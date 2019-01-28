@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-uwsgi
+  labels:
+    app: python-uwsgi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-uwsgi
+  template:
+    metadata:
+      labels:
+        app: python-uwsgi
+    spec:
+      hostname: python-uwsgi
+      containers:
+      - name: python-uwsgi
+        image: localhost:5000/python-uwsgi
+        ports:
+          -   containerPort: 8080

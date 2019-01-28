@@ -3,7 +3,10 @@ version: '3'
 services:
   typescript-nginx:
     container_name: typescript-nginx
-    image: docker_typescript-nginx
+    image: localhost:5000/typescript-nginx
+    build:
+      context: ../
+      dockerfile: docker/typescript-nginx/Dockerfile
     ports:
       - 8082:80
     depends_on:
@@ -11,7 +14,10 @@ services:
 
   python-nginx:
     container_name: python-nginx
-    image: docker_python-nginx
+    image: localhost:5000/python-nginx
+    build:
+      context: ../
+      dockerfile: docker/python-nginx/Dockerfile
     ports:
       - 8081:80
     depends_on:
@@ -19,7 +25,10 @@ services:
 
   python-uwsgi:
     container_name: python-uwsgi
-    image: docker_python-uwsgi
+    image: localhost:5000/python-uwsgi
+    build:
+      context: ../
+      dockerfile: docker/python-uwsgi/Dockerfile
     env_file: postgres/database.conf
     depends_on:
       - postgres
