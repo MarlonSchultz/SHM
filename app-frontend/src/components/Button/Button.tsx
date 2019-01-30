@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 
-class Button extends Component {
+type Props = {
+    onClick(e: any): void,
+}
+
+class Button extends Component<Props> {
     render() {
         return (
             <button onClick={this.props.onClick}>
