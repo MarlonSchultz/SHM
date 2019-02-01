@@ -14,19 +14,22 @@ function postData(url = ``, data = {}) {
       referrer: "no-referrer", // no-referrer, *client
       body: JSON.stringify(data), // body data type must match "Content-Type" header
   })
-  .then(response => response.json()); // parses response to JSON
+  .then((response) => {
+      return response;
+  }); // parses response to JSON
 }
 
 
 export function addProject(name: string, description?: string) {
-    postData('/projects', {
+    return postData('/projects', {
         name: name,
         description: description
     })
     .then(function(response) {
-        return response.json();
+        return response.status == 201;
     })
     .then(function(myJson) {
         console.log(JSON.stringify(myJson));
+        return false;
     });
 }

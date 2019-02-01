@@ -22,7 +22,9 @@ class ProjectInput extends Component<Props, State> {
     }
 
     create = () => {
-        addProject(this.state.name, this.state.description);
+        if (addProject(this.state.name, this.state.description)) {
+            this.setState({description: '', name: ''})
+        }
     }
 
     handleChange = (event: any) => {
