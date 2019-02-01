@@ -74,5 +74,9 @@ flask run
 
 The development server is available on `127.0.0.1:5000` by default.
 
+### Database Migrations
+To setup your database enter the docker container `python-uwsgi`, change to the `/shm` directory and execute the command `flask db upgrade`.  
+If you need to create a new migration, use the command `flask db migrate`. For further documentation see https://flask-migrate.readthedocs.io/en/latest/
+
 ## FrontEnd Development
 Insert info

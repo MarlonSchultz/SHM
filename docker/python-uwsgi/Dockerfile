@@ -9,16 +9,16 @@ RUN pip wheel --wheel-dir=/root/wheels cryptography
 # Actual Image
 FROM python:3.6-alpine
 
-WORKDIR /app
+WORKDIR /shm
 
-COPY ./app-backend /app
-COPY ./docker/python-uwsgi/uwsgi.ini /app/uwsgi.ini
+COPY ./app-backend /shm
+COPY ./docker/python-uwsgi/uwsgi.ini /shm/uwsgi.ini
 COPY --from=build-deps /root/wheels /root/wheels
 
-RUN apk add --no-cache build-base linux-headers pcre-dev libpq && \
+RUN apk add --no-cache build-base linux-headers pcre-dev libpq postgresql-dev && \
     pip install --no-index --find-links=/root/wheels /root/wheels/* && \
     pip install uwsgi
 
-RUN pip install -r /app/requirements.txt
+RUN pip install -r /shm/requirements.txt
 
-CMD ["uwsgi", "--ini", "/app/uwsgi.ini"]
+CMD ["uwsgi", "--ini", "/shm/uwsgi.ini"]
