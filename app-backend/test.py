@@ -44,5 +44,38 @@ class ProjectCreationTestCase(unittest.TestCase):
         self.assertIsNotNone(project.id)
 
 
+class ProjectListRetrievalTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.tester = app_object.test_client(self)
+
+    @mock.patch("app.project.list_projects")
+    def test_retrieve_project_list(self, mock_list_projects):
+        mock_project_list = [
+            app.project.Project(id=1, name="Eins", description="Das Erste")
+        ]
+
+        mock_list_projects.return_value = mock_project_list
+
+        project_list = app.project.list_projects()
+        self.assertEqual(len(project_list), 1)
+        self.assertEqual(project_list, mock_project_list)
+
+    @mock.patch("app.project.list_projects")
+    def test_retrieve_project_list_endpoint(self, mock_list_projects):
+        mock_project_list = [
+            app.project.Project(id=1, name="Eins", description="Das Erste")
+        ]
+        mock_json_project_list = [project.to_json() for project in mock_project_list]
+
+        mock_list_projects.return_value = mock_project_list
+
+        response = self.tester.get('/projects', content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, mock_json_project_list)
+
+
 if __name__ == '__main__':
     unittest.main()
