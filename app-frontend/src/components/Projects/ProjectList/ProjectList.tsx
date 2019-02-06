@@ -8,23 +8,21 @@ type State = {
 class ProjectList extends Component<any, State> {
 
     state = {
-        projects: [],
+        projects: Array<Project>(),
     };
 
     componentDidMount() {
         getProjects().then((projects) => {
             this.setState({projects: projects});
-        })
+        });
     }
 
     render() {
 
         let items : any = [];
         for(let project of this.state.projects) {
-            console.log('project',project);
             items.push(<li key={project.id}>#{project.id} {project.name}</li>)
         }
-        console.log('result', items);
 
         return (
             <ul>
