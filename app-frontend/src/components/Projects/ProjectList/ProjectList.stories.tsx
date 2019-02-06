@@ -2,5 +2,10 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import ProjectList from './ProjectList';
 
+let projectList = [
+  {'id': 1, 'name': 'Eins', 'description': 'Das Erste'},
+  {'id': 2, 'name': 'Zwei', 'description': 'Das Zweite'},
+];
+
 storiesOf('ProjectList', module)
-  .add('default', () => <ProjectList />)
+  .add('default', () => <ProjectList projects={projectList}/>)

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { addProject } from 'actions/projects'
 
 type Props = {
     name?: string,
-    description?: string
+    description?: string,
+    onSave: (name: string,description?: string) => void,
 }
 
 type State = {
@@ -22,8 +22,8 @@ class ProjectInput extends Component<Props, State> {
     }
 
     create = () => {
-        if (addProject(this.state.name, this.state.description)) {
-            this.setState({description: '', name: ''})
+        if (this.state.name != '') {
+            this.props.onSave(this.state.name, this.state.description);
         }
     }
 

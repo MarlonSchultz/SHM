@@ -1,26 +1,15 @@
 import React, { Component } from 'react';
-import { getProjects, Project } from 'actions/projects'
+import { Project } from 'actions/projects'
 
-type State = {
+type Props = {
     projects: Project[],
 };
 
-class ProjectList extends Component<any, State> {
-
-    state = {
-        projects: Array<Project>(),
-    };
-
-    componentDidMount() {
-        getProjects().then((projects) => {
-            this.setState({projects: projects});
-        });
-    }
+class ProjectList extends Component<Props> {
 
     render() {
-
         let items : any = [];
-        for(let project of this.state.projects) {
+        for(let project of this.props.projects) {
             items.push(<li key={project.id}>#{project.id} {project.name}</li>)
         }
 
