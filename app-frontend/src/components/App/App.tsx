@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import ProjectInput from 'components/Projects/ProjectInput/ProjectInput'
+import ProjectList from 'components/Projects/ProjectList/ProjectList';
 
 class App extends Component {
   render() {
@@ -12,6 +13,7 @@ class App extends Component {
         </header>
         <div>
           <ProjectInput/>
+          <ProjectList />
         </div>
       </div>
     );
