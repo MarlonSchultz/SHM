@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from sqlalchemy.exc import OperationalError, ProgrammingError
 from werkzeug.wrappers import Response
 
 from app import db
@@ -21,7 +22,7 @@ class Project(db.Model):
         return {'id': self.id, 'name': self.name, 'description': self.description}
 
 
-def create_project(name: str, description: str) -> Project:
+def create_project(name: str, description: str = '') -> Project:
     """
     Create a project and add it to the database.
 
@@ -56,10 +57,16 @@ def post_projects():
 
     :return: The response for creating a project.
     """
-    json_data = request.get_json()
-    project = create_project(name=json_data['name'], description=json_data['description'])
+    try:
+        json_data = request.get_json()
+        description = json_data['description'] if 'description' in json_data else ''
+        project = create_project(name=json_data['name'], description=description)
 
-    return Response(status='201 Created', headers={'Location': f'/project/{project.id}'})
+        return Response(status='201 Created', headers={'Location': f'/project/{project.id}'})
+    except KeyError as error:
+        return Response(response=f"Missing data: {', '.join(error.args)}", status='422 Unprocessable Entity')
+    except TypeError as error:
+        return Response(response="Format: application/json expected", status='400 Bad Request')
 
 
 @project_api.route('/projects', methods=['GET'])
@@ -69,6 +76,11 @@ def get_projects():
 
     :return: The json-formatted project-list.
     """
-    project_list = list_projects()
-    json_project_list = [project.to_json() for project in project_list]
-    return jsonify(json_project_list)
+    try:
+        project_list = list_projects()
+        json_project_list = [project.to_json() for project in project_list]
+        return jsonify(json_project_list)
+    except OperationalError:  # Could not connect to database
+        return jsonify('Could not load projects'), 500
+    except ProgrammingError:  # Table not found
+        return jsonify('Could not load projects'), 500

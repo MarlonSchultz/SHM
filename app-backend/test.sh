@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source venv/bin/activate
 source ../docker/postgres/database.conf
 export POSTGRES_USER
 export POSTGRES_PASSWORD
