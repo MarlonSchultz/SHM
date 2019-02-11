@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import BEMHelper from 'react-bem-helper';
+import './ProjectInput.scss';
 
 type Props = {
     name?: string,
@@ -10,6 +12,8 @@ type State = {
     name: string,
     description?: string
 }
+
+let classes = new BEMHelper('ProjectInput');
 
 class ProjectInput extends Component<Props, State> {
 
@@ -40,15 +44,25 @@ class ProjectInput extends Component<Props, State> {
 
     render() {
         return (
-            <div>
-                <div>
-                    <input name="name" onChange={this.handleChange} value={this.state.name}/>
+            <div {...classes()}>
+                <div {...classes('row')}>
+                    <input
+                        placeholder="Project Name"
+                        name="name"
+                        onChange={this.handleChange}
+                        value={this.state.name}
+                        {...classes('input', 'text')}/>
                 </div>
-                <div>
-                    <textarea name="description" onChange={this.handleChange} value={this.state.description} />
+                <div {...classes('row')}>
+                    <textarea
+                        name="description"
+                        placeholder="Projekt Beschreibung"
+                        onChange={this.handleChange}
+                        value={this.state.description}
+                        {...classes('input', 'textarea')}/>
                 </div>
-                <div>
-                    <button onClick={this.create}>Create</button>
+                <div {...classes('row')}>
+                    <button onClick={this.create} {...classes('button')}>Create</button>
                 </div>
             </div>
         );
