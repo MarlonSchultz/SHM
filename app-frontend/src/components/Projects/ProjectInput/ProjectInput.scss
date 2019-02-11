@@ -1,0 +1,36 @@
+
+@media(max-width: 400px) {
+    .ProjectInput {
+        width: 100%;
+    }
+}
+
+@media(min-width: 401px) {
+    .ProjectInput {
+        width: 400px;
+    }
+}
+
+.ProjectInput {
+    border: 1px solid #cccccc;
+    min-width: 150px;
+
+    padding: 1px;
+
+    &__row {
+        margin: 10px;
+    }
+
+    &__input {
+        width: 100%;
+        margin: 0;
+
+        -webkit-box-sizing: border-box; /* For legacy WebKit based browsers */
+           -moz-box-sizing: border-box; /* For legacy (Firefox <29) Gecko based browsers */
+                box-sizing: border-box;
+
+        &--textarea {
+            height: 80px
+        }
+    }
+}
