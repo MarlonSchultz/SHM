@@ -65,11 +65,10 @@ pip3 freeze > requirements.txt
 ```
 
 ### Development Server
-If you don't need the full stack for your development, you can use flask's development server. To start it, run the following commands (with your virtual environment activated):
+If you don't need the full stack for your development, you can use flask's development server. To start it, run the following shell script (with your virtual environment activated):
 
 ```bash
-export FLASK_APP=main.py  # Required only once for each terminal session
-flask run
+./debug_server.sh
 ```
 
 The development server is available on `127.0.0.1:5000` by default.
