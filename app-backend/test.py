@@ -234,5 +234,42 @@ class ProjectViewTestCase(unittest.TestCase):
         self.assertEqual(response.json, 'Could not load projects')
 
 
+class ProjectUpdateTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.tester = app_object.test_client(self)
+        self.mock_project = app.project.Project(id=1, name="Eins", description="Das Erste")
+        self.project_id = 1
+        self.project_name = "Zwei"
+        self.project_description = "Das Zweite"
+
+    @mock.patch("app.project.Project")
+    @mock.patch("app.db.session.commit")
+    def test_update_project(self, mock_db_session_commit, mock_project_model):
+        mock_project_model.query.get.return_value = self.mock_project
+
+        self.assertEqual(self.mock_project.id, 1)
+        self.assertEqual(self.mock_project.name, "Eins")
+        self.assertEqual(self.mock_project.description, "Das Erste")
+
+        project = app.project.update_project(self.project_id, self.project_name, self.project_description)
+
+        self.assertEqual(project.id, 1)
+        self.assertEqual(project.name, "Zwei")
+        self.assertEqual(project.description, "Das Zweite")
+
+    @mock.patch("app.project.update_project")
+    def test_update_project_endpoint(self, mock_update_project):
+        mock_update_project.return_value = app.project.Project(id=self.project_id, name=self.project_name,
+                                                               description=self.project_description)
+
+        response = self.tester.post('/project/<id>', json={
+            'id': self.project_id, 'name': self.project_name, 'description': self.project_description
+        })
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIn(member='Location', container=response.headers)
+
+
 if __name__ == '__main__':
     unittest.main()

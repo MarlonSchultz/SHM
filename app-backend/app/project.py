@@ -57,6 +57,19 @@ def retrieve_project(id: int) -> Project:
     return Project.query.filter_by(id=id).first()
 
 
+def update_project(id: int, name: str = None, description: str = None) -> Project:
+    try:
+        project = Project.query.get(id)
+        project.name = name if name else project.name
+        project.description = description if description else project.description
+
+        db.session.commit()
+
+        return project
+    except AttributeError as error:
+        raise OperationalError(f"Could not load project with id {id}", {}, '')
+
+
 project_api = Blueprint('Project API', __name__)
 
 
@@ -77,6 +90,10 @@ def post_projects():
         return Response(response=f"Missing data: {', '.join(error.args)}", status='422 Unprocessable Entity')
     except TypeError:
         return Response(response="Format: application/json expected", status='400 Bad Request')
+    except OperationalError:  # Could not connect to database
+        return jsonify('Could not load projects'), 500
+    except ProgrammingError:  # Table not found
+        return jsonify('Could not load projects'), 500
 
 
 @project_api.route('/projects', methods=['GET'])
@@ -113,3 +130,22 @@ def get_project(id):
         return jsonify('Could not load projects'), 500
     except ProgrammingError:  # Table not found
         return jsonify('Could not load projects'), 500
+
+
+@project_api.route('/project/<id>', methods=['POST'])
+def update_existing_project(id: int):
+    try:
+        json_data = request.get_json()
+        name = json_data['name'] if 'name' in json_data else None
+        description = json_data['description'] if 'description' in json_data else None
+        project = update_project(id=id, name=name, description=description)
+
+        return Response(status='201 Created', headers={'Location': f'/project/{project.id}'})
+    except KeyError as error:
+        return Response(response=f"Missing data: {', '.join(error.args)}", status='422 Unprocessable Entity')
+    except TypeError as error:
+        return Response(response="Format: application/json expected", status='400 Bad Request')
+    except OperationalError:  # Could not connect to database
+        return jsonify('Could not find project'), 500
+    except ProgrammingError:  # Table not found
+        return jsonify('Could not find project'), 500
