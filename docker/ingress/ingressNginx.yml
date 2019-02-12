@@ -1,14 +1,14 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: test-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    name: ingressbackend
+    annotations:
+        kubernetes.io/ingress.class: traefik
 spec:
   rules:
   - http:
       paths:
       - path: /
         backend:
-          serviceName: python-nginx
+          serviceName: python-uwsgi
           servicePort: 80

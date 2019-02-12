@@ -2,7 +2,7 @@
 FROM python:3.6-alpine as build-deps
 
 RUN apk add --no-cache linux-headers g++ postgresql-dev gcc build-base linux-headers \
-    ca-certificates python3-dev libffi-dev libressl-dev libxslt-dev
+    ca-certificates python3-dev libffi-dev libxslt-dev
 RUN pip wheel --wheel-dir=/root/wheels psycopg2
 RUN pip wheel --wheel-dir=/root/wheels cryptography
 

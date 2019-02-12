@@ -20,3 +20,10 @@ spec:
         image: localhost:5000/python-uwsgi
         ports:
           -   containerPort: 8080
+        envFrom:
+          - configMapRef:
+              name: postgres-postgres-database-conf
+      - name: python-nginx
+        image: localhost:5000/python-nginx
+        ports:
+          - containerPort: 80

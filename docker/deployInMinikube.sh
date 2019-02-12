@@ -16,10 +16,10 @@ docker push localhost:5000/typescript-nginx
 docker push localhost:5000/python-nginx
 docker push localhost:5000/python-uwsgi
 
+## load environment vars for psotgres into a configMap for later use in pods
+kubectl apply -f configMaps/postgres-postgres-database-conf.yaml
+
 ## start python-uwsgi in k8s
 kubectl create -f python-uwsgi/python-uwsgi_deployment.yml
 ## expose pods as service to k8s
 kubectl create -f python-uwsgi/python-uwsgi_service.yml
-
-## start python-nginx in k8s (relies on python-uswgi)
-kubectl create -f python-nginx/python-nginx_deployment.yml
