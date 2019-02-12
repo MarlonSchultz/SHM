@@ -263,13 +263,13 @@ class ProjectUpdateTestCase(unittest.TestCase):
         mock_update_project.return_value = app.project.Project(id=self.project_id, name=self.project_name,
                                                                description=self.project_description)
 
-        response = self.tester.post('/project/<id>', json={
-            'id': self.project_id, 'name': self.project_name, 'description': self.project_description
+        response = self.tester.post(f'/project/{self.project_id}', json={
+            'name': self.project_name, 'description': self.project_description
         })
 
         self.assertEqual(response.status_code, 201)
         self.assertIn(member='Location', container=response.headers)
-
+        self.assertEqual(response.headers['Location'], f'http://localhost/project/{self.project_id}')
 
 if __name__ == '__main__':
     unittest.main()
