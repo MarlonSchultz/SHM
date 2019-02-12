@@ -245,7 +245,7 @@ class ProjectUpdateTestCase(unittest.TestCase):
 
     @mock.patch("app.project.Project")
     @mock.patch("app.db.session.commit")
-    def test_update_project(self, mock_db_session_commit, mock_project_model):
+    def test_update_project_all_values(self, mock_db_session_commit, mock_project_model):
         mock_project_model.query.get.return_value = self.mock_project
 
         self.assertEqual(self.mock_project.id, 1)
@@ -257,6 +257,23 @@ class ProjectUpdateTestCase(unittest.TestCase):
         self.assertEqual(project.id, 1)
         self.assertEqual(project.name, "Zwei")
         self.assertEqual(project.description, "Das Zweite")
+
+    @mock.patch("app.project.Project")
+    @mock.patch("app.db.session.commit")
+    def test_update_project_raises_exception(self, mock_db_session_commit, mock_project_model):
+        mock_project = app.project.Project(id=None, name="Eins", description="Das Erste")
+        mock_project_model.query.get.return_value = self.mock_project
+
+        self.assertIsNone(mock_project.id)
+        self.assertEqual(mock_project.name, "Eins")
+        self.assertEqual(mock_project.description, "Das Erste")
+
+        project = app.project.update_project(self.project_id, self.project_name, self.project_description)
+
+        self.assertEqual(project.id, 1)
+        self.assertEqual(project.name, "Zwei")
+        self.assertEqual(project.description, "Das Zweite")
+
 
     @mock.patch("app.project.update_project")
     def test_update_project_endpoint(self, mock_update_project):
@@ -270,6 +287,7 @@ class ProjectUpdateTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn(member='Location', container=response.headers)
         self.assertEqual(response.headers['Location'], f'http://localhost/project/{self.project_id}')
+
 
 if __name__ == '__main__':
     unittest.main()
