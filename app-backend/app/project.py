@@ -57,17 +57,19 @@ def retrieve_project(id: int) -> Project:
     return Project.query.filter_by(id=id).first()
 
 
-def update_project(id: int, name: str = None, description: str = None) -> Project:
+def update_project(id: int, name: str = None, description: str = None) -> Project or None:
     try:
         project = Project.query.get(id)
         project.name = name if name else project.name
-        project.description = description if description else project.description
+        project.description = description if description is not None else project.description
 
         db.session.commit()
 
         return project
-    except AttributeError as error:
+    except AttributeError:
         raise OperationalError(f"Could not load project with id {id}", {}, '')
+    except TypeError:
+        return None
 
 
 project_api = Blueprint('Project API', __name__)
@@ -136,6 +138,11 @@ def get_project(id):
 def update_existing_project(id: int):
     try:
         json_data = request.get_json()
+        if json_data is None:
+            raise TypeError
+        if not json_data:
+            raise KeyError
+
         name = json_data['name'] if 'name' in json_data else None
         description = json_data['description'] if 'description' in json_data else None
         project = update_project(id=id, name=name, description=description)
