@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { getProjects, addProject, Project } from 'actions/projects'
-import ProjectInput from 'components/Projects/ProjectInput/ProjectInput'
-import ProjectList from 'components/Projects/ProjectList/ProjectList';
+import ProjectsOverview from 'components/Projects/ProjectsOverview/ProjectsOverview'
+import { Link, Route, Switch } from 'react-router-dom';
+import ProjectView from "../Projects/ProjectView/ProjectView";
 
 type State = {
   projects: Project[],
@@ -38,11 +39,22 @@ class App extends Component<Props, State> {
       <div className="App">
         <header className="App-header">
           <h1>Stegholder Mähp</h1>
+          <ul>
+              <li><Link to="/">Home</Link></li>
+          </ul>
         </header>
-        <div>
-          <ProjectInput onSave={this.saveProject} />
-          <ProjectList projects={this.state.projects} />
-        </div>
+        <Switch>
+          <Route path="/" exact render={() => (
+              <ProjectsOverview projects={this.state.projects} onSave={this.saveProject} />
+            )} />
+          <Route path="/project/:number" render={(props) => (
+              <ProjectView project={
+                this.state.projects.filter((project) => {
+                  return project.id == parseInt(props.match.params.number, 10)
+                })[0]
+              }/>
+          )} />
+        </Switch>
       </div>
     );
   }
