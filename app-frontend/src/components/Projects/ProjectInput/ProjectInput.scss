@@ -32,5 +32,9 @@
         &--textarea {
             height: 80px
         }
+
+        &--error {
+            border-color: red;
+        }
     }
 }

@@ -10,7 +10,8 @@ type Props = {
 
 type State = {
     name: string,
-    description?: string
+    description?: string,
+    missingName: boolean,
 }
 
 let classes = new BEMHelper('ProjectInput');
@@ -22,25 +23,28 @@ class ProjectInput extends Component<Props, State> {
         this.state = {
             name: props.name ? props.name : '',
             description: props.description,
+            missingName: false,
         };
     }
 
     create = () => {
+        this.setState({missingName: this.state.name == ''});
+
         if (this.state.name != '') {
             this.props.onSave(this.state.name, this.state.description);
         }
-    }
+    };
 
     handleChange = (event: any) => {
         switch(event.target.name) {
             case 'name':
-                this.setState({name: event.target.value});
+                this.setState({name: event.target.value, missingName: event.target.value == ''});
             break;
             case 'description':
                 this.setState({description: event.target.value});
                 break;
         }
-    }
+    };
 
     render() {
         return (
@@ -51,7 +55,10 @@ class ProjectInput extends Component<Props, State> {
                         name="name"
                         onChange={this.handleChange}
                         value={this.state.name}
-                        {...classes('input', 'text')}/>
+                        {...classes('input', [
+                            'text',
+                            this.state.missingName ? 'error' : '',
+                        ])}/>
                 </div>
                 <div {...classes('row')}>
                     <textarea

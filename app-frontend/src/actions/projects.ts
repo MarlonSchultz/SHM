@@ -48,6 +48,20 @@ export function addProject(name: string, description?: string) {
     });
 }
 
+export function updateProject(id: number, name: string, description?: string): Promise<Project> {
+    return postData(`/project/${id}`, {
+        name: name,
+        description: description
+    })
+    .then(function(response) {
+        return {
+            id: id,
+            name: name,
+            description: description,
+        };
+    });
+}
+
 export function getProjects() {
     return getData('/projects')
     .then(function(response) {
