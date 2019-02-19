@@ -65,11 +65,10 @@ pip3 freeze > requirements.txt
 ```
 
 ### Development Server
-If you don't need the full stack for your development, you can use flask's development server. To start it, run the following commands (with your virtual environment activated):
+If you don't need the full stack for your development, you can use flask's development server. To start it, run the following shell script (with your virtual environment activated):
 
 ```bash
-export FLASK_APP=main.py  # Required only once for each terminal session
-flask run
+./debug_server.sh
 ```
 
 The development server is available on `127.0.0.1:5000` by default.
@@ -77,6 +76,15 @@ The development server is available on `127.0.0.1:5000` by default.
 ### Database Migrations
 To setup your database enter the docker container `python-uwsgi`, change to the `/shm` directory and execute the command `flask db upgrade`.  
 If you need to create a new migration, use the command `flask db migrate`. For further documentation see https://flask-migrate.readthedocs.io/en/latest/
+
+### Resources
+Flask: http://flask.pocoo.org/docs/1.0/quickstart/  
+SQLAlchemy: https://www.pythoncentral.io/introductory-tutorial-python-sqlalchemy/  
+Flask SQLAlchemy: http://flask-sqlalchemy.pocoo.org/2.3/quickstart/  
+Flask Migrate: https://flask-migrate.readthedocs.io/en/latest/  
+Flask TDD: https://github.com/mjhea0/flaskr-tdd  
+Flask Mocking Part #1: https://medium.com/python-pandemonium/python-mocking-you-are-a-tricksy-beast-6c4a1f8d19b2  
+Flask Mocking Part #2: https://medium.com/python-pandemonium/surrender-python-mocking-i-have-you-now-5805e91cfbf4
 
 ## FrontEnd Development
 Insert info

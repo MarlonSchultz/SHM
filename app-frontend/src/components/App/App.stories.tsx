@@ -8,4 +8,4 @@ storiesOf('App', module)
     .addDecorator(story => (
         <MemoryRouter initialEntries={['/']}>{story()}</MemoryRouter>
     ))
-  .add('default', () => <App />, {notes: "{ markdown: AppStoryNote }",})
+  .add('default', () => <App />, {notes: "{ markdown: AppStoryNote }",});

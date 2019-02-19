@@ -14,14 +14,6 @@ def _db_session_add_side_effect(project):
     return project
 
 
-def _raise_operational_error(id: int = 1):
-    raise OperationalError('', {}, '')
-
-
-def _raise_programming_error(id: int = 1):
-    raise ProgrammingError('', {}, '')
-
-
 class MockDatabaseModelResult:
 
     def __init__(self):
@@ -32,6 +24,17 @@ class MockDatabaseModelResult:
 
 
 # # #  Test Cases  # # #
+def _raise_operational_error(id=None, name=None, description=None):
+    raise OperationalError('', {}, '')
+
+
+def _raise_programming_error(id=None, name=None, description=None):
+    raise ProgrammingError('', {}, '')
+
+
+def _raise_type_error(id=None, name=None, description=None):
+    raise TypeError()
+
 
 class BasicTestCase(unittest.TestCase):
 
@@ -116,7 +119,7 @@ class ProjectCreationTestCase(unittest.TestCase):
 
     @mock.patch("app.project.create_project")
     def test_create_project_endpoint_no_json(self, mock_create_project):
-        response = self.tester.post('projects', data=dict(
+        response = self.tester.post('/projects', data=dict(
             name=self.name,
             description=self.description
         ))
@@ -232,6 +235,108 @@ class ProjectViewTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.is_json, True)
         self.assertEqual(response.json, 'Could not load projects')
+
+
+class ProjectUpdateTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.tester = app_object.test_client(self)
+        self.mock_project = app.project.Project(id=1, name="Eins", description="Das Erste")
+        self.project_id = 1
+        self.project_name = "Zwei"
+        self.project_description = "Das Zweite"
+
+    @mock.patch("app.project.Project")
+    @mock.patch("app.db.session.commit")
+    def test_update_project_all_values(self, mock_db_session_commit, mock_project_model):
+        mock_project_model.query.get.return_value = self.mock_project
+        project = app.project.update_project(self.project_id, self.project_name, self.project_description)
+
+        self.assertEqual(project.id, self.project_id)
+        self.assertEqual(project.name, self.project_name)
+        self.assertEqual(project.description, self.project_description)
+
+    @mock.patch("app.project.Project")
+    @mock.patch("app.db.session.commit")
+    def test_update_project_empty_name(self, mock_db_session_commit, mock_project_model):
+        mock_project_model.query.get.return_value = self.mock_project
+        self.assertRaises(KeyError, app.project.update_project, 1, '', 'Description')
+
+    @mock.patch("app.project.Project")
+    @mock.patch("app.db.session.commit")
+    def test_update_project_empty_description(self, mock_db_session_commit, mock_project_model):
+        mock_project_model.query.get.return_value = self.mock_project
+        project = app.project.update_project(self.project_id, self.project_name, '')
+
+        self.assertEqual(project.id, self.project_id)
+        self.assertEqual(project.name, self.project_name)
+        self.assertEqual(project.description, "")
+
+    @mock.patch("app.project.Project")
+    @mock.patch("app.db.session.commit")
+    def test_update_project_wrong_id_type(self, mock_db_session_commit, mock_project_model):
+        mock_project_model.query.get.side_effect = _raise_type_error
+        project = app.project.update_project(None, 'Name', 'Desc')
+
+        self.assertIsNone(project)
+
+    @mock.patch("app.project.Project")
+    @mock.patch("app.db.session.commit")
+    def test_update_project_wrong_or_unknown_project(self, mock_db_session_commit, mock_project_model):
+        mock_project_model.query.get.return_value = None
+        self.assertRaises(OperationalError, app.project.update_project, 123123123, 'Name', 'Desc')
+
+    @mock.patch("app.project.update_project")
+    def test_update_project_endpoint(self, mock_update_project):
+        mock_update_project.return_value = app.project.Project(id=self.project_id, name=self.project_name,
+                                                               description=self.project_description)
+
+        response = self.tester.post(f'/project/{self.project_id}', json={
+            'name': self.project_name, 'description': self.project_description
+        })
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIn(member='Location', container=response.headers)
+        self.assertEqual(response.headers['Location'], f'http://localhost/project/{self.project_id}')
+
+    @mock.patch("app.project.update_project")
+    def test_update_project_endpoint_empty_json(self, mock_update_project):
+        response = self.tester.post(f'/project/{self.project_id}', json={})
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.data, b'Missing data: ')
+
+    @mock.patch("app.project.update_project")
+    def test_update_project_endpoint_no_json(self, mock_update_project):
+        response = self.tester.post(f'/project/{self.project_id}', data=dict(
+            name=self.project_name,
+            description=self.project_description
+        ))
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, b'Format: application/json expected')
+
+    @mock.patch("app.project.update_project")
+    def test_update_project_endpoint_no_database(self, mock_update_project):
+        mock_update_project.side_effect = _raise_operational_error
+        response = self.tester.post(f'/project/{self.project_id}', json={
+            'name': self.project_name, 'description': self.project_description
+        })
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not find project')
+
+    @mock.patch("app.project.update_project")
+    def test_update_project_endpoint_no_table(self, mock_update_project):
+        mock_update_project.side_effect = _raise_programming_error
+        response = self.tester.post(f'/project/{self.project_id}', json={
+            'name': self.project_name, 'description': self.project_description
+        })
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not find project')
 
 
 if __name__ == '__main__':

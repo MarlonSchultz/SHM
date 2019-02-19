@@ -1,24 +1,49 @@
 import React, { Component } from 'react';
 import { Project } from 'actions/projects';
+import ProjectInput from "../ProjectInput/ProjectInput";
+import {Route, RouteComponentProps, Switch, withRouter} from "react-router";
+import {Link} from "react-router-dom";
 
-type Props = {
+interface Props extends RouteComponentProps {
     project?: Project,
-};
+    onUpdate: (id: number, name: string, description?: string) => void;
+
+}
 
 class ProjectView extends Component<Props> {
 
+    updateProject = (name: string, description?: string) => {
+        if (this.props.project && this.props.project.id) {
+            this.props.onUpdate (this.props.project.id, name, description);
+        }
+    };
+
     render() {
-        if (!this.props.project) {
+        const { match, project } = this.props;
+        if (!project) {
             return (<div>No data</div>);
         }
 
         return (
-            <div>
-                <h1>#{this.props.project.id} {this.props.project.name}</h1>
-                <p>{this.props.project.description}</p>
-            </div>
+            <Switch>
+                <Route path={`${match.path}`} exact render={() => (
+                    <div>
+                        <h1>#{project.id} {project.name} <Link to={`${match.url}/edit`}>🖋️</Link></h1>
+                        <p>{project.description}</p>
+                    </div>
+                )} />
+                <Route path={`${match.path}/edit`} render={() => (
+                    <div>
+                        <Link to={`${match.url}`}>Back</Link>
+                        <ProjectInput name={this.props.project ? this.props.project.name : ''}
+                                      description={this.props.project ? this.props.project.description : ''}
+                                      buttonLabel={"Update"}
+                                      onSave={this.updateProject}/>
+                    </div>
+                )} />
+            </Switch>
         );
     };
 }
 
-export default ProjectView;
+export default withRouter(ProjectView);
