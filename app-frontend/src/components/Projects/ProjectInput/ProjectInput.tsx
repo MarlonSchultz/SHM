@@ -6,6 +6,7 @@ type Props = {
     name?: string,
     description?: string,
     onSave: (name: string,description?: string) => void,
+    buttonLabel?: string,
 }
 
 type State = {
@@ -17,6 +18,10 @@ type State = {
 let classes = new BEMHelper('ProjectInput');
 
 class ProjectInput extends Component<Props, State> {
+
+    static defaultProps = {
+        buttonLabel: 'Create',
+    };
 
     constructor(props: Props) {
         super(props);
@@ -69,7 +74,7 @@ class ProjectInput extends Component<Props, State> {
                         {...classes('input', 'textarea')}/>
                 </div>
                 <div {...classes('row')}>
-                    <button onClick={this.create} {...classes('button')}>Create</button>
+                    <button onClick={this.create} {...classes('button')}>{this.props.buttonLabel}</button>
                 </div>
             </div>
         );

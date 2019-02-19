@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Project } from 'actions/projects';
 import ProjectInput from "../ProjectInput/ProjectInput";
-import {Route, RouteComponentProps, Switch} from "react-router";
+import {Route, RouteComponentProps, Switch, withRouter} from "react-router";
 import {Link} from "react-router-dom";
 
 interface Props extends RouteComponentProps {
@@ -35,7 +35,10 @@ class ProjectView extends Component<Props> {
                 <Route path={`${match.path}/edit`} render={() => (
                     <div>
                         <Link to={`${match.url}`}>Back</Link>
-                        <ProjectInput name={this.props.project ? this.props.project.name : ''} description={this.props.project ? this.props.project.description : ''} onSave={this.updateProject}/>
+                        <ProjectInput name={this.props.project ? this.props.project.name : ''}
+                                      description={this.props.project ? this.props.project.description : ''}
+                                      buttonLabel={"Update"}
+                                      onSave={this.updateProject}/>
                     </div>
                 )} />
             </Switch>
@@ -43,4 +46,4 @@ class ProjectView extends Component<Props> {
     };
 }
 
-export default ProjectView;
+export default withRouter(ProjectView);
