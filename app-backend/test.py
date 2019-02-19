@@ -260,11 +260,7 @@ class ProjectUpdateTestCase(unittest.TestCase):
     @mock.patch("app.db.session.commit")
     def test_update_project_empty_name(self, mock_db_session_commit, mock_project_model):
         mock_project_model.query.get.return_value = self.mock_project
-        project = app.project.update_project(self.project_id, '', self.project_description)
-
-        self.assertEqual(project.id, self.project_id)
-        self.assertEqual(project.name, "Eins")
-        self.assertEqual(project.description, self.project_description)
+        self.assertRaises(KeyError, app.project.update_project, 1, '', 'Description')
 
     @mock.patch("app.project.Project")
     @mock.patch("app.db.session.commit")
@@ -286,7 +282,7 @@ class ProjectUpdateTestCase(unittest.TestCase):
 
     @mock.patch("app.project.Project")
     @mock.patch("app.db.session.commit")
-    def test_update_project_wrong_unknown_project(self, mock_db_session_commit, mock_project_model):
+    def test_update_project_wrong_or_unknown_project(self, mock_db_session_commit, mock_project_model):
         mock_project_model.query.get.return_value = None
         self.assertRaises(OperationalError, app.project.update_project, 123123123, 'Name', 'Desc')
 

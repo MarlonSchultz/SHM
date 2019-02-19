@@ -60,7 +60,11 @@ def retrieve_project(id: int) -> Project:
 def update_project(id: int, name: str = None, description: str = None) -> Project or None:
     try:
         project = Project.query.get(id)
-        project.name = name if name else project.name
+
+        if not name:
+            raise KeyError('Name must not be empty')
+
+        project.name = name
         project.description = description if description is not None else project.description
 
         db.session.commit()
