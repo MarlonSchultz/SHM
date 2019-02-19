@@ -7,18 +7,31 @@ import unittest
 import app
 
 
+# # #  Helper Functions & Classes  # # #
+
 def _db_session_add_side_effect(project):
     project.id = 1
     return project
 
 
-def _list_project_raise_operational_error():
+def _raise_operational_error(id: int = 1):
     raise OperationalError('', {}, '')
 
 
-def _list_project_raise_programming_error():
+def _raise_programming_error(id: int = 1):
     raise ProgrammingError('', {}, '')
 
+
+class MockDatabaseModelResult:
+
+    def __init__(self):
+        self.results = []
+
+    def first(self):
+        return self.results[0]
+
+
+# # #  Test Cases  # # #
 
 class BasicTestCase(unittest.TestCase):
 
@@ -140,7 +153,7 @@ class ProjectListRetrievalTestCase(unittest.TestCase):
 
     @mock.patch("app.project.list_projects")
     def test_retrieve_project_list_endpoint_no_database(self, mock_list_projects):
-        mock_list_projects.side_effect = _list_project_raise_operational_error
+        mock_list_projects.side_effect = _raise_operational_error
         response = self.tester.get('/projects', content_type='application/json')
 
         self.assertEqual(response.status_code, 500)
@@ -149,8 +162,72 @@ class ProjectListRetrievalTestCase(unittest.TestCase):
 
     @mock.patch("app.project.list_projects")
     def test_retrieve_project_list_endpoint_no_table(self, mock_list_projects):
-        mock_list_projects.side_effect = _list_project_raise_programming_error
+        mock_list_projects.side_effect = _raise_programming_error
         response = self.tester.get('/projects', content_type='application/json')
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not load projects')
+
+
+class ProjectViewTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.tester = app_object.test_client(self)
+        self.mock_project = app.project.Project(id=1, name="Eins", description="Das Erste")
+
+    @mock.patch("app.project.Project")
+    def test_retrieve_project(self, mock_project_model):
+        mock_project_result = MockDatabaseModelResult()
+        mock_project_result.results = [self.mock_project]
+
+        mock_project_model.query.filter_by.return_value = mock_project_result
+        project = app.project.retrieve_project(1)
+
+        self.assertEqual(project.id, self.mock_project.id)
+        self.assertEqual(project.name, self.mock_project.name)
+        self.assertEqual(project.description, self.mock_project.description)
+
+    @mock.patch("app.project.Project")
+    def test_retrieve_project_not_found(self, mock_project_model):
+        mock_project_result = MockDatabaseModelResult()
+        mock_project_result.results = [None]
+
+        mock_project_model.query.filter_by.return_value = mock_project_result
+        project = app.project.retrieve_project(100000)
+
+        self.assertEqual(project, None)
+
+    @mock.patch("app.project.retrieve_project")
+    def test_retrieve_project_endpoint(self, mock_retrieve_project):
+        mock_retrieve_project.return_value = self.mock_project
+        response = self.tester.get('/project/1', content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, self.mock_project.to_json())
+
+    @mock.patch("app.project.retrieve_project")
+    def test_retrieve_project_endpoint_not_found(self, mock_retrieve_project):
+        mock_retrieve_project.return_value = None
+        response = self.tester.get('/project/10000', content_type='application/json')
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data, b'Project not found')
+
+    @mock.patch("app.project.retrieve_project")
+    def test_retrieve_project_endpoint_no_database(self, mock_retrieve_project):
+        mock_retrieve_project.side_effect = _raise_operational_error
+        response = self.tester.get('/project/1', content_type='application/json')
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not load projects')
+
+    @mock.patch("app.project.retrieve_project")
+    def test_retrieve_project_list_endpoint_no_table(self, mock_retrieve_project):
+        mock_retrieve_project.side_effect = _raise_programming_error
+        response = self.tester.get('/project/1', content_type='application/json')
 
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.is_json, True)

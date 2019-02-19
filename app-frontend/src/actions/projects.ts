@@ -58,5 +58,5 @@ export function getProjects() {
 export interface Project {
     id? : number,
     name: string,
-    descrption?: string,
+    description?: string,
 }

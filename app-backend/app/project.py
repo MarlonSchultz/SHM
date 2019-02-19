@@ -47,6 +47,16 @@ def list_projects() -> []:
     return project_list
 
 
+def retrieve_project(id: int) -> Project:
+    """
+    Retrieve and return the project matching <id>
+
+    :param id: The project to retrieve.
+    :return: The retrieved project.
+    """
+    return Project.query.filter_by(id=id).first()
+
+
 project_api = Blueprint('Project API', __name__)
 
 
@@ -65,7 +75,7 @@ def post_projects():
         return Response(status='201 Created', headers={'Location': f'/project/{project.id}'})
     except KeyError as error:
         return Response(response=f"Missing data: {', '.join(error.args)}", status='422 Unprocessable Entity')
-    except TypeError as error:
+    except TypeError:
         return Response(response="Format: application/json expected", status='400 Bad Request')
 
 
@@ -80,6 +90,25 @@ def get_projects():
         project_list = list_projects()
         json_project_list = [project.to_json() for project in project_list]
         return jsonify(json_project_list)
+    except OperationalError:  # Could not connect to database
+        return jsonify('Could not load projects'), 500
+    except ProgrammingError:  # Table not found
+        return jsonify('Could not load projects'), 500
+
+
+@project_api.route('/project/<id>', methods=['GET'])
+def get_project(id):
+    """
+    Provide a GET API endpoint for retrieving a specific project.
+
+    :param id: The id of the project to be retrieved.
+    :return: The json-formatted project information.
+    """
+    try:
+        project = retrieve_project(id)
+        return jsonify(project.to_json())
+    except AttributeError:
+        return Response(response='Project not found', status='404 Not Found')
     except OperationalError:  # Could not connect to database
         return jsonify('Could not load projects'), 500
     except ProgrammingError:  # Table not found
