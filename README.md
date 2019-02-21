@@ -73,6 +73,24 @@ If you don't need the full stack for your development, you can use flask's devel
 
 The development server is available on `127.0.0.1:5000` by default.
 
+### Testing
+To run all tests, simply use the provided shell script:
+
+```bash
+./test.sh
+```
+
+If you don't want to use the script make sure the environment variables for the database connection are available.
+
+### Code Coverage
+To keep an eye on our code test coverage, there is another shell script available:
+
+```bash
+./coverage.sh
+```
+
+Additionally, you can add the argument `html` to the script to open a html version of the coverage result in your browser, providing more in-depth feedback.
+
 ### Database Migrations
 To setup your database enter the docker container `python-uwsgi`, change to the `/shm` directory and execute the command `flask db upgrade`.  
 If you need to create a new migration, use the command `flask db migrate`. For further documentation see https://flask-migrate.readthedocs.io/en/latest/
