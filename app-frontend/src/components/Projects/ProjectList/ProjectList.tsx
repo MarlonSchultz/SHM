@@ -1,17 +1,21 @@
+import { Project } from 'actions/projects';
 import React, { Component } from 'react';
-import { Project } from 'actions/projects'
 import { Link } from 'react-router-dom';
 
-type Props = {
-    projects: Project[],
-};
+interface Props {
+    projects: Project[];
+}
 
 class ProjectList extends Component<Props> {
 
-    render() {
-        let items : any = [];
-        for(let project of this.props.projects) {
-            items.push(<li key={project.id}><Link to={`/project/${project.id}`}>#{project.id} {project.name}</Link> <Link to={`/project/${project.id}/edit`}>🖋️</Link></li>)
+    public render(): JSX.Element {
+        const items: JSX.Element[] = [];
+        for (const project of this.props.projects) {
+            items.push(
+            <li key={project.id}>
+                <Link to={`/project/${project.id}`}>#{project.id} {project.name}</Link>
+                <Link to={`/project/${project.id}/edit`}>🖋️</Link>
+            </li>);
         }
 
         return (

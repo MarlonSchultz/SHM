@@ -1,14 +1,14 @@
+import { addProject, getProjects, updateProject as projectAPIUpdate, Project } from 'actions/projects';
+import ProjectsOverview from 'components/Projects/ProjectsOverview/ProjectsOverview';
 import React, { Component } from 'react';
+import { withRouter, Link, Route, RouteComponentProps, Switch } from 'react-router-dom';
+import ProjectView from '../Projects/ProjectView/ProjectView';
 import logo from './logo.svg';
 import './App.css';
-import { getProjects, addProject, updateProject as projectAPIUpdate, Project } from 'actions/projects'
-import ProjectsOverview from 'components/Projects/ProjectsOverview/ProjectsOverview'
-import { Link, Route, Switch, withRouter, RouteComponentProps } from 'react-router-dom';
-import ProjectView from "../Projects/ProjectView/ProjectView";
 
-type State = {
-  projects: Project[],
-};
+interface State {
+  projects: Project[];
+}
 
 interface Props extends RouteComponentProps {
 
@@ -16,36 +16,39 @@ interface Props extends RouteComponentProps {
 
 class App extends Component<Props, State> {
 
-  state = {
-    projects: Array<Project>(),
-  };
+  public constructor(props: Props) {
+    super(props);
+    this.state = {
+      projects: [],
+    };
+  }
 
-  componentDidMount() {
-    getProjects().then((projects) => {
-      this.setState({ projects: projects });
+  public componentDidMount(): void {
+    getProjects().then((projects: Project[]) => {
+      this.setState({ projects });
     });
   }
 
-  createProject = (name: string, description?: string) => {
-    addProject(name, description).then((result) => {
-      getProjects().then((projects) => {
-        this.setState({ projects: projects });
+  public createProject = (name: string, description?: string) => {
+    addProject(name, description).then(() => {
+      getProjects().then((projects: Project[]) => {
+        this.setState({ projects });
       });
     });
-  };
+  }
 
-  updateProject = (id: number, name: string, description?: string) => {
-      projectAPIUpdate(id, name, description).then((result) => {
-          this.setState((prevState, props) => {
-              let projects = prevState.projects.map(p => p.id === result.id ?  result : p );
-              return { projects: projects };
+  public updateProject = (id: number, name: string, description?: string) => {
+      projectAPIUpdate(id, name, description).then((result: Project) => {
+          this.setState((prevState: State) => {
+              const projects = prevState.projects.map((p: Project) => p.id === result.id ?  result : p);
+              return { projects };
           });
-      }).then((result) => {
+      }).then(() => {
           this.props.history.push(`/project/${id}`);
       });
-  };
+  }
 
-  render() {
+  public render(): JSX.Element {
     return (
       <div className="App">
         <header className="App-header">
@@ -55,16 +58,26 @@ class App extends Component<Props, State> {
           </ul>
         </header>
         <Switch>
-          <Route path="/" exact render={() => (
+          <Route
+            path="/"
+            exact={true}
+            render={() => (
               <ProjectsOverview projects={this.state.projects} onSave={this.createProject} />
-            )} />
-          <Route path="/project/:number" render={(props) => (
-              <ProjectView {...props} onUpdate={this.updateProject} project={
-                this.state.projects.filter((project) => {
-                  return project.id == parseInt(props.match.params.number, 10)
-                })[0]
-              }/>
-          )} />
+            )}
+          />
+          <Route
+            path="/project/:number"
+            render={(props: RouteComponentProps<{number: string}>) => (
+              <ProjectView
+                {...props}
+                onUpdate={this.updateProject}
+                project={
+                  this.state.projects.filter((project: Project) =>
+                    project.id! === parseInt(props.match.params.number, 10))[0]
+                }
+              />
+          )}
+          />
         </Switch>
       </div>
     );
