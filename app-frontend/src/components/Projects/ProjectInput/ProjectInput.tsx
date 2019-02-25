@@ -13,7 +13,7 @@ interface DefaultProps {
     buttonLabel: string;
 }
 
-interface State {
+export interface ProjectInputState {
     name: string;
     description?: string;
     missingName: boolean;
@@ -21,7 +21,7 @@ interface State {
 
 const classes = new BEMHelper('ProjectInput');
 
-class ProjectInput extends Component<Props, State> {
+class ProjectInput extends Component<Props, ProjectInputState> {
 
     public static defaultProps: DefaultProps = {
         buttonLabel: 'Create',
