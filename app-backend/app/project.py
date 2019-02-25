@@ -58,6 +58,14 @@ def retrieve_project(id: int) -> Project:
 
 
 def update_project(id: int, name: str = None, description: str = None) -> Project or None:
+    """
+    Update an existing project's fields.
+
+    :param id: The id of the project to update.
+    :param name: The new name of the project to update.
+    :param description: The new description of the project to update.
+    :return: The updated project.
+    """
     try:
         project = Project.query.get(id)
 
@@ -140,6 +148,12 @@ def get_project(id):
 
 @project_api.route('/project/<id>', methods=['POST'])
 def update_existing_project(id: int):
+    """
+    Provide a POST API endpoint for updating a specific project.
+
+    :param id: The id of the project to be updated.
+    :return: Response indicating the update's success.
+    """
     try:
         json_data = request.get_json()
         if json_data is None:
