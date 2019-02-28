@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy.exc import OperationalError, ProgrammingError
+from sqlalchemy.sql import expression
 from werkzeug.wrappers import Response
 
 from app import db
