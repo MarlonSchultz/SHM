@@ -60,13 +60,14 @@ def retrieve_project(id: int) -> Project:
     return Project.query.filter_by(id=id).first()
 
 
-def update_project(id: int, name: str = None, description: str = None) -> Project or None:
+def update_project(id: int, name: str = None, description: str = None, archived: bool = False) -> Project or None:
     """
     Update an existing project's fields.
 
     :param id: The id of the project to update.
     :param name: The new name of the project to update.
     :param description: The new description of the project to update.
+    :param archived:
     :return: The updated project.
     """
     try:
@@ -77,6 +78,7 @@ def update_project(id: int, name: str = None, description: str = None) -> Projec
 
         project.name = name
         project.description = description if description is not None else project.description
+        project.archived = archived
 
         db.session.commit()
 
@@ -166,7 +168,8 @@ def update_existing_project(id: int):
 
         name = json_data['name'] if 'name' in json_data else None
         description = json_data['description'] if 'description' in json_data else None
-        project = update_project(id=id, name=name, description=description)
+        archived = json_data['archived'] if 'archived' in json_data else False
+        project = update_project(id=id, name=name, description=description, archived=archived)
 
         return Response(status='201 Created', headers={'Location': f'/project/{project.id}'})
     except KeyError as error:
