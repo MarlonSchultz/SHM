@@ -27,6 +27,9 @@ services:
       context: ../
       dockerfile: docker/python-uwsgi/Dockerfile
     env_file: postgres/database.conf
+    volumes:
+      - ../app-backend:/shm
+      - ./python-uwsgi/uwsgi.ini:/shm/uwsgi.ini:ro
     depends_on:
       - postgres
 

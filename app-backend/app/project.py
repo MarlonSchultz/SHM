@@ -13,6 +13,7 @@ class Project(db.Model):
     name = db.Column(db.String(300), unique=False, nullable=False)
     description = db.Column(db.Text(), unique=False, nullable=True)
     stakeholders = db.relationship('Stakeholder', backref='project', lazy=True)
+    archived = db.Column(db.Boolean(), unique=False, nullable=False, default=False)
 
     def to_json(self):
         """
