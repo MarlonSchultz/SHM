@@ -46,7 +46,7 @@ def list_projects() -> []:
 
     :return: The fetched project list.
     """
-    project_list = Project.query.all()
+    project_list = Project.query.filter_by(archived=False).all()
     return project_list
 
 
