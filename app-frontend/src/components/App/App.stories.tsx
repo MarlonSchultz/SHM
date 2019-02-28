@@ -1,11 +1,11 @@
+import { storiesOf, RenderFunction } from '@storybook/react';
 import React from 'react';
-import { storiesOf } from '@storybook/react';
+import { MemoryRouter } from 'react-router';
+
 import App from './App';
-import * as AppStoryNote from './AppStoryNote.md';
-import {MemoryRouter} from "react-router";
 
 storiesOf('App', module)
-    .addDecorator(story => (
+    .addDecorator((story: RenderFunction) => (
         <MemoryRouter initialEntries={['/']}>{story()}</MemoryRouter>
     ))
-  .add('default', () => <App />, {notes: "{ markdown: AppStoryNote }",});
+    .add('default', () => <App />, { notes: 'Basic App' });

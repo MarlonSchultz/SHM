@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 
-type Props = {
-    onClick(e: any): void,
+interface Props {
+    onClick(e: React.MouseEvent<HTMLButtonElement>): void;
 }
 
 class Button extends Component<Props> {
-    render() {
+    public render(): JSX.Element {
         return (
             <button onClick={this.props.onClick}>
                 {this.props.children}

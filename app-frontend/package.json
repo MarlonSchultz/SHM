@@ -45,6 +45,8 @@
     "babel-loader": "8.0.4",
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.7.1",
-    "storybook-addon-specifications": "^2.1.2"
+    "storybook-addon-specifications": "^2.1.2",
+    "tslint": "^5.13.0",
+    "tslint-react": "^3.6.0"
   }
 }

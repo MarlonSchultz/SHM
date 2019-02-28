@@ -1,0 +1,101 @@
+{
+    "defaultSeverity": "warning",
+    "extends": [
+      "tslint:recommended", "tslint-react"
+    ],
+    "linterOptions": {
+      "exclude": [
+        "src/serviceWorker.ts",
+        "src/setupTests.js",
+        "src/**/*.test.tsx",
+        "src/**/*.test.ts"
+      ]
+    },
+    "rules": {
+      "no-console": {
+        "severity": "error",
+        "options": ["log"]
+      },
+      "interface-name": false,
+      "quotemark": [true, "single", "jsx-double", "avoid-template"],
+      "object-literal-sort-keys": false,
+      "no-empty-interface": false,
+      "no-namespace": false,
+      "ban-types": false,
+      "no-any": true,
+      "member-access": [true, "check-constructor"],
+      "typedef": [
+        true,
+        "call-signature",
+        "parameter",
+        "arrow-parameter",
+        "property-declaration",
+        "member-variable-declaration"
+      ],
+      "variable-name": [
+        true,
+        "ban-keywords",
+        "check-format",
+        "allow-pascal-case"
+      ],
+      "jsx-no-lambda": false,
+      "jsx-no-multiline-js": false,
+      "ordered-imports": [
+        true,
+        {
+          "import-sources-order": "lowercase-first",
+          "named-imports-order": "lowercase-first"
+        }
+      ],
+      "curly": true,
+      "no-for-in-array": true,
+      "no-null-keyword": true,
+      "no-object-literal-type-assertion": true,
+      "no-shadowed-variable": true,
+      "no-string-literal": true,
+      "no-string-throw": true,
+      "no-this-assignment": [true, {"allow-destructuring": true}],
+      "no-unbound-method": true,
+      "no-use-before-declare": true,
+      "no-var-keyword": true,
+      "prefer-conditional-expression": true,
+      "prefer-object-spread": true,
+      "radix": false,
+      "restrict-plus-operands": true,
+      "triple-equals": true,
+      "deprecation": true,
+      "eofline": true,
+      "indent": [true, "spaces", 4],
+      "linebreak-style": [true, "LF"],
+      "max-classes-per-file": [true, 1],
+      "max-line-length": [true, 120],
+      "no-default-export": false,
+      "no-duplicate-imports": true,
+      "prefer-const": [true, {"destructuring": "all"}],
+      "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
+      "align": [true, "parameters", "statements", "arguments", "members", "elements"],
+      "arrow-parens": true,
+      "arrow-return-shorthand": [true, "multiline"],
+      "encoding": true,
+      "import-spacing": true,
+      "interface-over-type-literal": true,
+      "new-parens": true,
+      "no-angle-bracket-type-assertion": true,
+      "no-irregular-whitespace": true,
+      "no-parameter-properties": true,
+      "no-unnecessary-callback-wrapper": true,
+      "object-literal-key-quotes": [true, "as-needed"],
+      "object-literal-shorthand": true,
+      "prefer-switch": [true, {"min-cases": 2}],
+      "prefer-template": true,
+      "semicolon": [true, "always"],
+      "space-before-function-paren": [true, {"anonymous": "never", "named": "never", "asyncArrow": "always"}],
+      "space-within-parens": [true, 0],
+      "switch-final-break": [true, "always"],
+      "type-literal-delimiter": true,
+      "whitespace": [true, "check-branch", "check-operator", "check-decl", "check-type-operator", "check-preblock", "check-rest-spread", "check-separator"]
+    },
+    "rulesDirectory": []
+  }
+  
+  

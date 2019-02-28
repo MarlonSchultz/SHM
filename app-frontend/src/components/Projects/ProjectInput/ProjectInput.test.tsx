@@ -1,9 +1,10 @@
+import { shallow } from 'enzyme';
 import React from 'react';
-import {shallow} from 'enzyme';
 import ProjectInput from './ProjectInput';
+import { ProjectInputState } from './ProjectInput';
 
 it('renders without crashing', () => {
-    const container = shallow(<ProjectInput onSave={() => {}} />);
+    const container = shallow(<ProjectInput onSave={() => { }} />);
 
     expect(container.find('button').text()).toBe('Create');
     expect(container.find('input').length).toBe(1);
@@ -11,7 +12,7 @@ it('renders without crashing', () => {
 });
 
 it('Button has right text', () => {
-    const container = shallow(<ProjectInput buttonLabel="Test" onSave={() => {}} />);
+    const container = shallow(<ProjectInput buttonLabel="Test" onSave={() => { }} />);
 
     expect(container.find('button').text()).toBe('Test');
     expect(container.find('input').length).toBe(1);
@@ -19,21 +20,21 @@ it('Button has right text', () => {
 });
 
 it('input and clicked', () => {
-    let callback = jest.fn();
+    const callback = jest.fn();
 
     const container = shallow(<ProjectInput onSave={callback} />);
-    
-    let title = container.find('input');
-    title.simulate('change', { target: { name: 'name', value: 'Titletext' } } );
-    
-    let text = container.find('textarea');
-    text.simulate('change', { target: { name: 'description', value: 'Text' } } );
 
-    expect(container.state().name).toBe('Titletext');
-    expect(container.state().description).toBe('Text');
+    const title = container.find('input');
+    title.simulate('change', { target: { name: 'name', value: 'Titletext' } });
+
+    const text = container.find('textarea');
+    text.simulate('change', { target: { name: 'description', value: 'Text' } });
+
+    expect((container.state() as ProjectInputState).name).toBe('Titletext');
+    expect((container.state() as ProjectInputState).description).toBe('Text');
 
     container.find('button').simulate('click');
-    
+
     expect(callback.mock.calls.length).toBe(1);
 
     expect(callback.mock.calls[0][0]).toBe('Titletext');
@@ -41,7 +42,7 @@ it('input and clicked', () => {
 });
 
 it('clicked', () => {
-    let callback = jest.fn();
+    const callback = jest.fn();
 
     const container = shallow(<ProjectInput onSave={callback} />);
     container.setState({
@@ -56,7 +57,7 @@ it('clicked', () => {
 });
 
 it('clicked without name', () => {
-    let callback = jest.fn();
+    const callback = jest.fn();
 
     const container = shallow(<ProjectInput onSave={callback} />);
     container.setState({
@@ -67,5 +68,5 @@ it('clicked without name', () => {
 
     container.find('button').simulate('click');
     expect(callback.mock.calls.length).toBe(0);
-    expect(container.state().missingName).toBe(true);
+    expect((container.state() as ProjectInputState).missingName).toBe(true);
 });
