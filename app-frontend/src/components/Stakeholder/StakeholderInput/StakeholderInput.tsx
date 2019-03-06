@@ -26,13 +26,6 @@ class StakeholderInput extends Component<Props> {
         buttonLabel: 'Create',
     };
 
-    public constructor(props: Props) {
-        super(props);
-        this.state = {
-            missingName: false,
-        };
-    }
-
     public render(): JSX.Element {
         let { name, company, role, attitude } = this.props;
 
@@ -72,7 +65,7 @@ class StakeholderInput extends Component<Props> {
                                 placeholder="Attiude"
                             />
                             <button type="submit">
-                                Submit
+                                {this.props.buttonLabel}
                             </button>
                         </Form>
                     )}
