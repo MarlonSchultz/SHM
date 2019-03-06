@@ -30,3 +30,20 @@
     transform: rotate(360deg);
   }
 }
+
+
+.shm-form {
+
+}
+
+.shm-form__text-input {
+
+}
+
+.shm-form__label {
+  display: block;
+}
+
+.shm-form__input-row {
+  margin-bottom: 5px;
+}

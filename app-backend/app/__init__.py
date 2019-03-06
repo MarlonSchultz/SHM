@@ -12,8 +12,11 @@ migrate = Migrate(app_object, db)
 cors = CORS(app_object, resources={r"/*": {"origins": "*"}})
 
 from app.project import project_api
+from app import project
+from app import stakeholder
 
 app_object.register_blueprint(project_api)
+app_object.register_blueprint(stakeholder.stakeholder_api)
 
 
 @app_object.route('/')
