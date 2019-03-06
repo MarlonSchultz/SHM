@@ -63,6 +63,6 @@ def post_stakeholder(project_id: int):
     except TypeError as error:
         return Response(response="Format: application/json expected", status='400 Bad Request')
     except OperationalError:  # Could not connect to database
-        return jsonify('Could not find project'), 500
+        return jsonify('Could not find stakeholder'), 500
     except ProgrammingError:  # Table not found
-        return jsonify('Could not find project'), 500
+        return jsonify('Could not find stakeholder'), 500

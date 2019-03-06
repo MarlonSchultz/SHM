@@ -24,15 +24,15 @@ class MockDatabaseModelResult:
 
 
 # # #  Test Cases  # # #
-def _raise_operational_error(id=None, name=None, description=None):
+def _raise_operational_error(*args, **kwargs):
     raise OperationalError('', {}, '')
 
 
-def _raise_programming_error(id=None, name=None, description=None):
+def _raise_programming_error(*args, **kwargs):
     raise ProgrammingError('', {}, '')
 
 
-def _raise_type_error(id=None, name=None, description=None):
+def _raise_type_error(*args, **kwargs):
     raise TypeError()
 
 
@@ -375,7 +375,8 @@ class StakeholderCreationTestCase(unittest.TestCase):
     @mock.patch("app.db.session.commit")
     def test_create_stakeholder(self, mock_db_session_commit, mock_db_session_add):
         mock_db_session_add.side_effect = _db_session_add_side_effect
-        stake_holder = app.stakeholder.create_stakeholder(self.project_id, self.name, self.company, self.role, self.attitude)
+        stake_holder = app.stakeholder.create_stakeholder(self.project_id, self.name, self.company, self.role,
+                                                          self.attitude)
 
         self.assertEqual(stake_holder.name, self.name)
         self.assertEqual(stake_holder.company, self.company)
@@ -388,7 +389,9 @@ class StakeholderCreationTestCase(unittest.TestCase):
 
     @mock.patch("app.stakeholder.create_stakeholder")
     def test_create_stakeholder_endpoint(self, mock_create_stakeholder):
-        mock_create_stakeholder.return_value = app.stakeholder.Stakeholder(project_id=1, name=self.name, company=self.company, role=self.role, attitude=self.attitude)
+        mock_create_stakeholder.return_value = app.stakeholder.Stakeholder(project_id=1, name=self.name,
+                                                                           company=self.company, role=self.role,
+                                                                           attitude=self.attitude)
         response = self.tester.post(f'/project/{self.project_id}/stakeholder', json={
             'name': self.name,
             'company': self.company,
@@ -410,7 +413,7 @@ class StakeholderCreationTestCase(unittest.TestCase):
 
     @mock.patch("app.stakeholder.create_stakeholder")
     def test_create_stakeholder_endpoint_missing_description(self, mock_create_stakeholder):
-        mock_create_stakeholder.return_value = app.stakeholder.Stakeholder(id=1, name=self.name, project_id = 1)
+        mock_create_stakeholder.return_value = app.stakeholder.Stakeholder(id=1, name=self.name, project_id=1)
         response = self.tester.post(f'/project/{self.project_id}/stakeholder', json={
             'name': self.name
         })
@@ -447,7 +450,7 @@ class StakeholderCreationTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.is_json, True)
-        self.assertEqual(response.json, 'Could not load projects')
+        self.assertEqual(response.json, 'Could not find stakeholder')
 
     @mock.patch("app.stakeholder.create_stakeholder")
     def test_create_stakeholder_endpoint_no_table(self, mock_create_stakeholder):
@@ -461,7 +464,8 @@ class StakeholderCreationTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.is_json, True)
-        self.assertEqual(response.json, 'Could not load projects')
+        self.assertEqual(response.json, 'Could not find stakeholder')
+
 
 if __name__ == '__main__':
     unittest.main()
