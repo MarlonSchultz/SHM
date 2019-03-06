@@ -399,7 +399,69 @@ class StakeholderCreationTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn(member='Location', container=response.headers)
 
+    @mock.patch("app.stakeholder.create_stakeholder")
+    def test_create_stakeholder_endpoint_missing_name(self, mock_create_stakeholder):
+        response = self.tester.post(f'/project/{self.project_id}/stakeholder', json={
+            'company': self.company
+        })
 
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.data, b'Missing data: name')
+
+    @mock.patch("app.stakeholder.create_stakeholder")
+    def test_create_stakeholder_endpoint_missing_description(self, mock_create_stakeholder):
+        mock_create_stakeholder.return_value = app.stakeholder.Stakeholder(id=1, name=self.name, project_id = 1)
+        response = self.tester.post(f'/project/{self.project_id}/stakeholder', json={
+            'name': self.name
+        })
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIn(member='Location', container=response.headers)
+
+    @mock.patch("app.stakeholder.create_stakeholder")
+    def test_create_stakeholder_endpoint_empty_json(self, mock_create_stakeholder):
+        response = self.tester.post(f'/project/{self.project_id}/stakeholder', json={})
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.data, b'Missing data: name')
+
+    @mock.patch("app.stakeholder.create_stakeholder")
+    def test_create_stakeholder_endpoint_no_json(self, mock_create_stakeholder):
+        response = self.tester.post(f'/project/{self.project_id}/stakeholder', data=dict(
+            name=self.name,
+            company=self.company
+        ))
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, b'Format: application/json expected')
+
+    @mock.patch("app.stakeholder.create_stakeholder")
+    def test_create_stakeholder_endpoint_no_database(self, mock_create_stakeholder):
+        mock_create_stakeholder.side_effect = _raise_operational_error
+        response = self.tester.post(f'/project/{self.project_id}/stakeholder', json={
+            'name': self.name,
+            'company': self.company,
+            'role': self.role,
+            'attitude': self.attitude,
+        })
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not load projects')
+
+    @mock.patch("app.stakeholder.create_stakeholder")
+    def test_create_stakeholder_endpoint_no_table(self, mock_create_stakeholder):
+        mock_create_stakeholder.side_effect = _raise_programming_error
+        response = self.tester.post(f'/project/{self.project_id}/stakeholder', json={
+            'name': self.name,
+            'company': self.company,
+            'role': self.role,
+            'attitude': self.attitude,
+        })
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not load projects')
 
 if __name__ == '__main__':
     unittest.main()

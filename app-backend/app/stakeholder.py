@@ -51,17 +51,11 @@ def post_stakeholder(project_id: int):
     
     try:
         json_data = request.get_json()
-        if json_data is None:
-            raise TypeError
-        if not json_data:
-            raise KeyError
-
-        name = json_data['name'] if 'name' in json_data else None
         company = json_data['company'] if 'company' in json_data else None
         role = json_data['role'] if 'role' in json_data else None
         attitude = json_data['attitude'] if 'attitude' in json_data else None
 
-        stakeholder = create_stakeholder(project_id=project_id, name=name, company=company, role=role, attitude=attitude)
+        stakeholder = create_stakeholder(project_id=project_id, name=json_data['name'], company=company, role=role, attitude=attitude)
 
         return Response(status='201 Created', headers={'Location': f'/project/{stakeholder.project_id}/stakeholder/{stakeholder.id}'})
     except KeyError as error:
