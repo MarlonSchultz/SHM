@@ -9,6 +9,7 @@ interface Props {
 
 interface State {
     filteredProjects: Project[];
+    filter?: string,
 }
 
 class ProjectList extends Component<Props, State> {
@@ -18,9 +19,14 @@ class ProjectList extends Component<Props, State> {
         this.state = {filteredProjects: props.projects};
     }
 
-    handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    filterProjects = (filterWord?: string) => {
+        if (!filterWord || filterWord === '') {
+            this.setState({filteredProjects: this.props.projects});
+            return;
+        }
+
         let projectList: Project[] = [];
-        const searchString = e.target.value.toLowerCase();
+        const searchString = filterWord.toLowerCase();
 
         projectList = this.props.projects.filter((project: Project) => {
             const nameMatch = this.buildProjectTitle(project).toLowerCase().includes(searchString);
@@ -30,6 +36,16 @@ class ProjectList extends Component<Props, State> {
         });
 
         this.setState({filteredProjects: projectList})
+    }
+
+    componentDidUpdate(prevProps: Props, prevState: State) {
+        if (prevState.filter !== this.state.filter || prevProps.projects.length != this.props.projects.length) {
+            this.filterProjects(this.state.filter);
+        }
+    }
+
+    handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({filter: e.target.value});
     }
 
     buildProjectTitle = (project: Project): string => {
