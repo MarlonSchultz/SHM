@@ -21,7 +21,7 @@ describe('ProjectList', () => {
         const container = shallow(<ProjectList projects={projects} />);
 
         expect(container.find('li').length).toBe(2);
-        expect(container.contains('Eins')).toBe(true);
-        expect(container.contains('Zwei')).toBe(true);
+        expect(container.contains('#1 Eins')).toBe(true);
+        expect(container.contains('#2 Zwei')).toBe(true);
     });
 });
