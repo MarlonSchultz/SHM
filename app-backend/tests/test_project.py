@@ -128,7 +128,7 @@ class ProjectCreationTestCase(unittest.TestCase):
         self.assertEqual(response.data, b'Format: application/json expected')
 
     @mock.patch("app.project.create_project")
-    def test_retrieve_project_list_endpoint_no_database(self, mock_create_project):
+    def test_create_project_endpoint_no_database(self, mock_create_project):
         mock_create_project.side_effect = _raise_operational_error
         response = self.tester.post('/projects', json={
             'name': self.name,
@@ -139,7 +139,7 @@ class ProjectCreationTestCase(unittest.TestCase):
         self.assertEqual(response.json, 'Could not load projects')
 
     @mock.patch("app.project.create_project")
-    def test_retrieve_project_list_endpoint_no_table(self, mock_create_project):
+    def test_create_project_endpoint_no_table(self, mock_create_project):
         mock_create_project.side_effect = _raise_programming_error
         response = self.tester.post('/projects', json={
             'name': self.name,
