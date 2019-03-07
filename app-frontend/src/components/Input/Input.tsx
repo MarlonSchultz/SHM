@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 type Props = {
-    onChange(e: any): void,
+    onChange(e: React.ChangeEvent<HTMLInputElement>): void,
 }
 
 class Input extends Component<Props> {
