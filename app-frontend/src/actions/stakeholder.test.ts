@@ -5,15 +5,9 @@ jest.mock('./http');
 
 describe('Stakeholder Tests', () => {
 
-    jest.mock('./http');
-
-    it('adds a stakeholder', () => {
-        expect.assertions(1);
-
+    it('adds a stakeholder', (done) => {
         const mockedDependency = <jest.Mock>http.postData;
-        mockedDependency.mockReturnValueOnce(new Promise((resolve, reject) => {
-            resolve({status: 201});
-        }));
+        mockedDependency.mockReturnValueOnce(Promise.resolve({ status: 201 }));
 
         addStakeholder({
             projectId: 1,
@@ -23,7 +17,19 @@ describe('Stakeholder Tests', () => {
             attitude: 'Mist'
         }).then((value) => {
             expect(value).toEqual(true);
-        })
+            expect(mockedDependency.mock.calls[0][0]).toEqual('/project/1/stakeholder');
+            expect(mockedDependency.mock.calls[0][1]).toEqual({
+                projectId: 1,
+                name: 'Bernd',
+                company: 'Kika',
+                role: 'Brot',
+                attitude: 'Mist'
+            })
+
+            mockedDependency.mockReset();
+            done();
+        });
+
     });
 
 });
