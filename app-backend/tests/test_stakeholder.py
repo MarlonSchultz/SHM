@@ -128,3 +128,7 @@ class StakeholderCreationTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.is_json, True)
         self.assertEqual(response.json, 'Could not find stakeholder')
+
+
+if __name__ == '__main__':
+    unittest.main()
