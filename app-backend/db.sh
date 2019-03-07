@@ -8,4 +8,8 @@ export POSTGRES_HOST
 export POSTGRES_PORT
 export POSTGRES_DB
 
-python3 -m unittest
+if [ -z "$1" ]; then
+	echo "Missing argument: flask db <argument>";
+else
+    flask db "$1";
+fi
