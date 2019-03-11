@@ -1,7 +1,7 @@
 import { Project } from 'actions/projects';
+import Input from 'components/Base/Input/Input';
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import Input from 'components/Input/Input';
 
 interface Props {
     projects: Project[];
@@ -9,7 +9,7 @@ interface Props {
 
 interface State {
     filteredProjects: Project[];
-    filter?: string,
+    filter?: string;
 }
 
 class ProjectList extends Component<Props, State> {
@@ -19,7 +19,13 @@ class ProjectList extends Component<Props, State> {
         this.state = {filteredProjects: props.projects};
     }
 
-    filterProjects = (filterWord?: string) => {
+    public componentDidUpdate(prevProps: Props, prevState: State): void {
+        if (prevState.filter !== this.state.filter || prevProps.projects.length !== this.props.projects.length) {
+            this.filterProjects(this.state.filter);
+        }
+    }
+
+    public filterProjects = (filterWord?: string) => {
         if (!filterWord || filterWord === '') {
             this.setState({filteredProjects: this.props.projects});
             return;
@@ -30,7 +36,8 @@ class ProjectList extends Component<Props, State> {
 
         projectList = this.props.projects.filter((project: Project) => {
             const nameMatch = this.buildProjectTitle(project).toLowerCase().includes(searchString);
-            const descriptionMatch = (project.description ? project.description : '').toLowerCase().includes(searchString);
+            const desc = (project.description ? project.description : '').toLowerCase();
+            const descriptionMatch = desc.includes(searchString);
 
             return nameMatch || descriptionMatch;
         });
@@ -38,19 +45,12 @@ class ProjectList extends Component<Props, State> {
         this.setState({filteredProjects: projectList})
     }
 
-    componentDidUpdate(prevProps: Props, prevState: State) {
-        if (prevState.filter !== this.state.filter || prevProps.projects.length != this.props.projects.length) {
-            this.filterProjects(this.state.filter);
-        }
-    }
-
-    handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    public handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({filter: e.target.value});
     }
 
-    buildProjectTitle = (project: Project): string => {
-        return `#${project.id!} ${project.name}`;
-    }
+    public buildProjectTitle = (project: Project): string =>
+        `#${project.id!} ${project.name}`
 
     public render(): JSX.Element {
         const items: JSX.Element[] = [];
