@@ -22,7 +22,7 @@ class Stakeholder(db.Model):
 
         :return: The json formatted fields.
         """
-        return {'id': self.id, 'name': self.name, 'company': self.company, 'role': self.role, 'attitude': self.attitude}
+        return {'id': self.id, 'name': self.name, 'company': self.company, 'role': self.role, 'attitude': self.attitude, 'projectId': self.project_id}
 
 
 def create_stakeholder(project_id: int, name: str, company: str, role: str, attitude: str):
