@@ -1,5 +1,5 @@
 import * as http from './http'
-import { getProjects, addProject, updateProject } from './projects';
+import { getProjects, addProject, updateProject, DraftProject, Project } from './projects';
 
 jest.mock('./http');
 
@@ -40,7 +40,12 @@ describe('Project Tests', () => {
         const mockedDependency = <jest.Mock>http.postData;
         mockedDependency.mockReturnValueOnce(Promise.resolve({ status: 201 }));
 
-        addProject('Conject', 'A Project').then(value => {
+        const input: DraftProject = {
+            name: 'Conject',
+            description: 'A Project'
+        };
+
+        addProject(input).then(value => {
             expect(value).toBe(true);
             expect(mockedDependency.mock.calls[0][0]).toEqual('/projects');
             expect(mockedDependency.mock.calls[0][1]).toEqual({
@@ -57,13 +62,20 @@ describe('Project Tests', () => {
         const mockedDependency = <jest.Mock>http.postData;
         mockedDependency.mockReturnValueOnce(Promise.resolve({ status: 201 }));
 
-        updateProject(1, 'New Name', 'New Desc').then((value) => {
+        const update: Project = {
+            id: 1,
+            name: 'New Name',
+            description: 'New Desc',
+        }
+
+        updateProject(update).then((value) => {
             expect(value.id).toEqual(1);
             expect(value.name).toEqual('New Name');
             expect(value.description).toEqual('New Desc');
 
             expect(mockedDependency.mock.calls[0][0]).toEqual('/project/1');
             expect(mockedDependency.mock.calls[0][1]).toEqual({
+                id: 1,
                 name: 'New Name',
                 description: 'New Desc'
             });

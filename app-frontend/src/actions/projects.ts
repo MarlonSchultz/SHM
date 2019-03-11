@@ -1,24 +1,13 @@
 import { getData, postData } from './http';
 
-export function addProject(name: string, description?: string): Promise<boolean> {
-    return postData('/projects', {
-        name,
-        description,
-    })
+export function addProject(draft: DraftProject): Promise<boolean> {
+    return postData('/projects', draft)
     .then((response: Response): boolean => response.status === 201);
 }
 
-export function updateProject(id: number, name: string, description?: string): Promise<Project> {
-    return postData(`/project/${id}`, {
-        name,
-        description,
-    })
-    .then((response: Response) => ({
-            id,
-            name,
-            description,
-        }),
-    );
+export function updateProject(update: Project): Promise<Project> {
+    return postData(`/project/${update.id}`, update)
+    .then((response: Response) => update);
 }
 
 export function getProjects(): Promise<Project[]> {
@@ -26,8 +15,11 @@ export function getProjects(): Promise<Project[]> {
     .then((response: Response) => response.json());
 }
 
-export interface Project {
-    id?: number;
+export interface DraftProject {
     name: string;
     description?: string;
+}
+
+export interface Project extends DraftProject {
+    id: number;
 }

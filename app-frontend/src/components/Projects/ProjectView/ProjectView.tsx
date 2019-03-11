@@ -1,15 +1,15 @@
 import { Project } from 'actions/projects';
+import { addStakeholder, DraftStakeholder } from 'actions/stakeholder';
+import StakeholderInput from 'components/Stakeholder/StakeholderInput/StakeholderInput';
+import { FormikActions } from 'formik';
 import React, { Component } from 'react';
 import { withRouter, Route, RouteComponentProps, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 import ProjectInput from '../ProjectInput/ProjectInput';
-import StakeholderInput from 'components/Stakeholder/StakeholderInput/StakeholderInput';
-import { addStakeholder, DraftStakeholder } from 'actions/stakeholder';
-import { FormikActions } from 'formik';
 
 interface Props extends RouteComponentProps {
     project?: Project;
-    onUpdate: (id: number, name: string, description?: string) => void;
+    onUpdate: (project: Project) => void;
 
 }
 
@@ -17,9 +17,28 @@ class ProjectView extends Component<Props> {
 
     public updateProject = (name: string, description?: string) => {
         if (this.props.project && this.props.project.id) {
-            this.props.onUpdate(this.props.project.id, name, description);
+            this.props.onUpdate({
+                id: this.props.project.id,
+                name,
+                description,
+            });
         }
     }
+
+    public createStakeholder = (project: Project) =>
+        (values: DraftStakeholder, actions: FormikActions<DraftStakeholder>): void => {
+            addStakeholder(values).then((result: boolean) => {
+                if (result) {
+                    actions.resetForm({
+                        projectId: project.id,
+                        name: '',
+                        company: '',
+                        attitude: '',
+                        role: '',
+                    });
+                }
+            });
+        }
 
     public render(): JSX.Element {
         const { match, project } = this.props;
@@ -38,19 +57,7 @@ class ProjectView extends Component<Props> {
                             <p>{project.description}</p>
                             <StakeholderInput
                                 project={project}
-                                onSubmit={(values: DraftStakeholder, actions: FormikActions<DraftStakeholder>) => {
-                                    addStakeholder(values).then((result: boolean) => {
-                                        if (result) {
-                                            actions.resetForm({
-                                                projectId: project.id!,
-                                                name:'',
-                                                company: '',
-                                                attitude: '',
-                                                role: '',
-                                            });
-                                        }
-                                    });
-                                }}
+                                onSubmit={this.createStakeholder(project)}
                             />
                         </div>
                     )}

@@ -12,4 +12,5 @@ storiesOf('ProjectList', module)
     .addDecorator(story => (
         <MemoryRouter initialEntries={['/']}>{story()}</MemoryRouter>
     ))
-  .add('default', () => <ProjectList projects={projectList}/>)
+  .add('default', () => <ProjectList projects={projectList}/>);
+  

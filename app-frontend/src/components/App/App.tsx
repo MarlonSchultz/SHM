@@ -30,21 +30,21 @@ class App extends Component<Props, State> {
   }
 
   public createProject = (name: string, description?: string) => {
-    addProject(name, description).then(() => {
+    addProject({name, description}).then(() => {
       getProjects().then((projects: Project[]) => {
         this.setState({ projects });
       });
     });
   }
 
-  public updateProject = (id: number, name: string, description?: string) => {
-      projectAPIUpdate(id, name, description).then((result: Project) => {
+  public updateProject = (project: Project) => {
+      projectAPIUpdate(project).then((result: Project) => {
           this.setState((prevState: State) => {
               const projects = prevState.projects.map((p: Project) => p.id === result.id ?  result : p);
               return { projects };
           });
       }).then(() => {
-          this.props.history.push(`/project/${id}`);
+          this.props.history.push(`/project/${project.id}`);
       });
   }
 
