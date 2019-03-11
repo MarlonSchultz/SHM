@@ -70,9 +70,7 @@ class ProjectView extends Component<Props, State> {
                     });
                 }
             }).then(() => {
-                if (this.props.project) {
-                    this.updateStakeholders(this.props.project.id);
-                }
+                this.updateStakeholders(project.id);
             });
 
         };
