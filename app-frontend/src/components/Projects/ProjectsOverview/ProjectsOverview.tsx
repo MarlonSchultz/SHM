@@ -1,7 +1,7 @@
 import { Project } from 'actions/projects';
 import ProjectInput from 'components/Projects/ProjectInput/ProjectInput';
 import ProjectList from 'components/Projects/ProjectList/ProjectList';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 interface Props {
     projects: Project[];

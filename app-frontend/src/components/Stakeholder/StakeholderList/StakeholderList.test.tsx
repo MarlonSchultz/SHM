@@ -33,8 +33,8 @@ describe('StakeholderList', () => {
         const container = shallow(<StakeholderList stakeholders={stakeholders}/>);
 
         expect(container.find('li').length).toBe(2);
-        expect(container.contains('#1 Eckbert | Macrohard | Know-It-All | könnte besser sein')).toBe(true);
-        expect(container.contains('#2 Louise | Macrohard | Entscheiderin | Macht ihr mal')).toBe(true);
+        expect(container.contains('#1 Eckbert')).toBe(true);
+        expect(container.contains('#2 Louise')).toBe(true);
     });
 
 });
