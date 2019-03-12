@@ -1,16 +1,31 @@
-import {Stakeholder} from "../../../actions/stakeholder";
-import React, {Component} from "react";
-import {Link} from "react-router-dom";
+import {Stakeholder} from "actions/stakeholder";
+import React, {Component, Fragment} from "react";
+import Tooltip from "../../Base/Tooltip/Tooltip";
+import StakeholderDetailTooltip from "../StakeholderDetailTooltip/StakeholderDetailTooltip";
 
 
 interface Props {
     stakeholders: Stakeholder[];
 }
 
-class StakeholderList extends Component<Props> {
+interface State  {
+    currentStakeholder?: Stakeholder;
+}
+
+class StakeholderList extends Component<Props, State> {
+
+    public constructor(props: Props) {
+        super(props);
+
+        this.state = {currentStakeholder: undefined};
+    };
 
     buildStakeholderEntry = (stakeholder: Stakeholder): string => {
-        return `#${stakeholder.id} ${stakeholder.name} | ${stakeholder.company} | ${stakeholder.role} | ${stakeholder.attitude}`
+        return `#${stakeholder.id} ${stakeholder.name}`;
+    };
+
+    selectStakeholder = (stakeholder?: Stakeholder) => () => {
+        this.setState({currentStakeholder: stakeholder});
     };
 
     public render(): JSX.Element {
@@ -21,8 +36,10 @@ class StakeholderList extends Component<Props> {
 
             items.push(
                 <li key={stakeholder.id}>
-                    <Link to={`/project/${stakeholder.projectId}/stakeholder/${stakeholder.id}`}>{stakeholderEntry}</Link>
-                    <Link to={`/project/${stakeholder.projectId}/stakeholder/${stakeholder.id}/edit`}>🖋️</Link>
+                    <Tooltip component={<StakeholderDetailTooltip stakeholder={stakeholder}/>} position={'right'}>
+                        <a onMouseEnter={this.selectStakeholder(stakeholder)} onMouseLeave={this.selectStakeholder(undefined)}>{stakeholderEntry}</a>
+                    </Tooltip>
+                    <a href={`/project/${stakeholder.projectId}/stakeholder/${stakeholder.id}/edit`}>🖋️</a>
                 </li>
             );
         }
