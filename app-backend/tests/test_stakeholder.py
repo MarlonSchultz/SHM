@@ -197,5 +197,127 @@ class StakeHolderListRetrievalTestCase(unittest.TestCase):
         self.assertEqual(response.json, 'Could not find stakeholders')
 
 
+class StakeholderUpdateTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.tester = app_object.test_client(self)
+        self.mock_stakeholder = app.stakeholder.Stakeholder(id=1, project_id=1, name="Stakeholder 1",
+                                                            company="Wichtig GmbH",
+                                                            role="Chief of Wichtigkeit",
+                                                            attitude="alles muss man selber machen")
+        self.stakeholder_id = 1
+        self.stakeholder_name = "Stakeholder 2"
+        self.stakeholder_company = "Super Wichtig GmbH"
+        self.stakeholder_role = "Superior Chief of Wichtigkeit"
+        self.stakeholder_attitude = "Wirklich alles muss man selber machen"
+
+    @mock.patch("app.stakeholder.Stakeholder")
+    @mock.patch("app.db.session.commit")
+    def test_update_stakeholder_all_values(self, mock_db_session_commit, mock_stakeholder_model):
+        mock_stakeholder_model.query.get.return_value = self.mock_stakeholder
+        stakeholder = app.stakeholder.update_stakeholder(self.stakeholder_id, name=self.stakeholder_name,
+                                                         company=self.stakeholder_company, role=self.stakeholder_role,
+                                                         attitude=self.stakeholder_attitude)
+
+        self.assertEqual(stakeholder.id, self.stakeholder_id)
+        self.assertEqual(stakeholder.name, self.stakeholder_name)
+        self.assertEqual(stakeholder.company, self.stakeholder_company)
+        self.assertEqual(stakeholder.role, self.stakeholder_role)
+        self.assertEqual(stakeholder.attitude, self.stakeholder_attitude)
+
+    @mock.patch("app.stakeholder.Stakeholder")
+    @mock.patch("app.db.session.commit")
+    def test_update_stakeholder_empty_name(self, mock_db_session_commit, mock_stakeholder_model):
+        mock_stakeholder_model.query.get.return_value = self.mock_stakeholder
+        self.assertRaises(KeyError, app.stakeholder.update_stakeholder, 1, '', company='Company', role='Role',
+                          attitude='Attitude')
+
+    @mock.patch("app.stakeholder.Stakeholder")
+    @mock.patch("app.db.session.commit")
+    def test_update_stakeholder_empty_secondary_values(self, mock_db_session_commit, mock_stakeholder_model):
+        mock_stakeholder_model.query.get.return_value = self.mock_stakeholder
+        stakeholder = app.stakeholder.update_stakeholder(self.stakeholder_id, self.stakeholder_name, company='',
+                                                         role='', attitude='')
+
+        self.assertEqual(stakeholder.id, self.stakeholder_id)
+        self.assertEqual(stakeholder.name, self.stakeholder_name)
+        self.assertEqual(stakeholder.company, '')
+        self.assertEqual(stakeholder.role, '')
+        self.assertEqual(stakeholder.attitude, '')
+
+    @mock.patch("app.stakeholder.Stakeholder")
+    @mock.patch("app.db.session.commit")
+    def test_update_stakeholder_wrong_id_type(self, mock_db_session_commit, mock_stakeholder_model):
+        mock_stakeholder_model.query.get.side_effect = _raise_type_error
+        stakeholder = app.stakeholder.update_stakeholder(None, 'Name', company='Company', role='Role',
+                                                         attitude='Attitude')
+
+        self.assertIsNone(stakeholder)
+
+    @mock.patch("app.stakeholder.Stakeholder")
+    @mock.patch("app.db.session.commit")
+    def test_update_stakeholder_wrong_or_unknown_stakeholder(self, mock_db_session_commit, mock_stakeholder_model):
+        mock_stakeholder_model.query.get.return_value = None
+        self.assertRaises(OperationalError, app.stakeholder.update_stakeholder, 123123123, 'Name', company='Company',
+                          role='Role', attitude='Attitude')
+
+    @mock.patch("app.stakeholder.update_stakeholder")
+    def test_update_stakeholder_endpoint(self, mock_update_stakeholder):
+        mock_update_stakeholder.return_value = app.stakeholder.Stakeholder(id=self.stakeholder_id,
+                                                                           project_id=1,
+                                                                           name=self.stakeholder_name,
+                                                                           company=self.stakeholder_company,
+                                                                           role=self.stakeholder_role,
+                                                                           attitude=self.stakeholder_attitude)
+
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}', json={
+            'name': self.stakeholder_name, 'company': self.stakeholder_company, 'role': self.stakeholder_company,
+            'attitude': self.stakeholder_attitude
+        })
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIn(member='Location', container=response.headers)
+        self.assertEqual(response.headers['Location'], f'http://localhost/project/1/stakeholder/{self.stakeholder_id}')
+
+    @mock.patch("app.stakeholder.update_stakeholder")
+    def test_update_stakeholder_endpoint_empty_json(self, mock_update_stakeholder):
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}', json={})
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.data, b'Missing data: ')
+
+    @mock.patch("app.stakeholder.update_stakeholder")
+    def test_update_stakeholder_endpoint_no_json(self, mock_update_stakeholder):
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}', data=dict(
+            name=self.stakeholder_name,
+            company=self.stakeholder_company,
+        ))
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, b'Format: application/json expected')
+
+    @mock.patch("app.stakeholder.update_stakeholder")
+    def test_update_stakeholder_endpoint_no_database(self, mock_update_stakeholder):
+        mock_update_stakeholder.side_effect = _raise_operational_error
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}', json={
+            'name': self.stakeholder_name, 'company': self.stakeholder_company
+        })
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not find stakeholder')
+
+    @mock.patch("app.stakeholder.update_stakeholder")
+    def test_update_stakeholder_endpoint_no_table(self, mock_update_stakeholder):
+        mock_update_stakeholder.side_effect = _raise_programming_error
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}', json={
+            'name': self.stakeholder_name, 'company': self.stakeholder_company
+        })
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not find stakeholder')
+
+
 if __name__ == '__main__':
     unittest.main()

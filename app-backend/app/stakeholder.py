@@ -22,7 +22,8 @@ class Stakeholder(db.Model):
 
         :return: The json formatted fields.
         """
-        return {'id': self.id, 'name': self.name, 'company': self.company, 'role': self.role, 'attitude': self.attitude, 'projectId': self.project_id}
+        return {'id': self.id, 'name': self.name, 'company': self.company, 'role': self.role, 'attitude': self.attitude,
+                'projectId': self.project_id}
 
 
 def create_stakeholder(project_id: int, name: str, company: str, role: str, attitude: str):
@@ -51,6 +52,38 @@ def list_stakeholders(project_id: int) -> []:
     """
     stakeholder_list = Stakeholder.query.filter_by(project_id=project_id).all()
     return stakeholder_list
+
+
+def update_stakeholder(id: int, name: str = None, company: str = None, role: str = None,
+                       attitude: str = None) -> Stakeholder or None:
+    """
+    Provide a POST API endpoint for updating a specific stakeholder.
+
+    :param id: ID of the stakeholder.
+    :param name: Name of the stakeholder.
+    :param company: Company of the stakeholder.
+    :param role: Role of the stakeholder.
+    :param attitude: Attitude of the stakeholder.
+    :return:
+    """
+    try:
+        stakeholder = Stakeholder.query.get(id)
+
+        if not name:
+            raise KeyError('Name must not be empty')
+
+        stakeholder.name = name
+        stakeholder.company = company if company is not None else stakeholder.company
+        stakeholder.role = role if role is not None else stakeholder.role
+        stakeholder.attitude = attitude if attitude is not None else stakeholder.attitude
+
+        db.session.commit()
+
+        return stakeholder
+    except AttributeError:
+        raise OperationalError(f"Could not load stakeholder with id {id}", {}, '')
+    except TypeError:
+        return None
 
 
 stakeholder_api = Blueprint('Stakeholder API', __name__)
@@ -89,3 +122,31 @@ def get_stakeholder_list(project_id: int):
         return jsonify('Could not find stakeholders'), 500
     except ProgrammingError:  # Table not found
         return jsonify('Could not find stakeholders'), 500
+
+
+@stakeholder_api.route('/project/<project_id>/stakeholder/<stakeholder_id>', methods=['POST'])
+def update_existing_stakeholder(project_id: int, stakeholder_id: int):
+    try:
+        json_data = request.get_json()
+        if json_data is None:
+            raise TypeError
+        if not json_data:
+            raise KeyError
+
+        name = json_data['name'] if 'name' in json_data else None
+        company = json_data['company'] if 'company' in json_data else None
+        role = json_data['role'] if 'role' in json_data else None
+        attitude = json_data['attitude'] if 'attitude' in json_data else None
+
+        stakeholder = update_stakeholder(stakeholder_id, name=name, company=company, role=role, attitude=attitude)
+
+        return Response(status='201 Created',
+                        headers={'Location': f'/project/{project_id}/stakeholder/{stakeholder_id}'})
+    except KeyError as error:
+        return Response(response=f"Missing data: {', '.join(error.args)}", status='422 Unprocessable Entity')
+    except TypeError as error:
+        return Response(response="Format: application/json expected", status='400 Bad Request')
+    except OperationalError:
+        return jsonify('Could not find stakeholder'), 500
+    except ProgrammingError:
+        return jsonify('Could not find stakeholder'), 500
