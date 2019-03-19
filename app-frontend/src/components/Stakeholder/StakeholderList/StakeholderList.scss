@@ -1,0 +1,17 @@
+#stakeholder-list {
+  display: inline-block;
+  margin: auto;
+
+  li {
+    margin-right: 50px;
+  }
+
+  .entry {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .button-edit {
+    cursor: pointer;
+  }
+}

@@ -10,12 +10,12 @@ interface Props {
     company?: string;
     role?: string;
     attitude?: string;
-    buttonLabel?: string;
+    isUpdate?: boolean;
     onSubmit: (values: DraftStakeholder, actions: FormikActions<DraftStakeholder>) => void;
 }
 
 interface DefaultProps {
-    buttonLabel: string;
+    isUpdate: boolean;
 }
 
 const classes = new BEMHelper('StakeholderInput');
@@ -23,7 +23,7 @@ const classes = new BEMHelper('StakeholderInput');
 class StakeholderInput extends Component<Props> {
 
     public static defaultProps: DefaultProps = {
-        buttonLabel: 'Create',
+        isUpdate: false,
     };
 
     public render(): JSX.Element {
@@ -34,7 +34,7 @@ class StakeholderInput extends Component<Props> {
         }
         return (
             <div {...classes()}>
-                <h1>Add Stakeholder for "{this.props.project.name}"</h1>
+                <h1>{this.props.isUpdate ? 'Update' : 'Add'} Stakeholder for "{this.props.project.name}"</h1>
                 <Formik
                     initialValues={{name, company, role, attitude, projectId: this.props.project.id!}}
                     onSubmit={this.props.onSubmit}
@@ -65,7 +65,7 @@ class StakeholderInput extends Component<Props> {
                                 placeholder="Attiude"
                             />
                             <button type="submit">
-                                {this.props.buttonLabel}
+                                {this.props.isUpdate ? 'Update': 'Create'}
                             </button>
                         </Form>
                     )}

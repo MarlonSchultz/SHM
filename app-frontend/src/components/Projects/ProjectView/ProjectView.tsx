@@ -94,7 +94,7 @@ class ProjectView extends Component<Props, State> {
                                 project={project}
                                 onSubmit={this.createStakeholder(project)}
                             />
-                            <StakeholderList stakeholders={this.state.stakeholders}/>
+                            <StakeholderList stakeholders={this.state.stakeholders} project={this.props.project || {id: 1, name: "Test"}}/>
                         </div>
                     )}
                 />
