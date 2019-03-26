@@ -1,4 +1,4 @@
-import {Stakeholder} from "actions/stakeholder";
+import {DraftStakeholder, Stakeholder, updateStakeholder} from "actions/stakeholder";
 import React, {Component, Fragment} from "react";
 import Tooltip from "../../Base/Tooltip/Tooltip";
 import StakeholderDetailTooltip from "../StakeholderDetailTooltip/StakeholderDetailTooltip";
@@ -6,14 +6,16 @@ import Modal from "../../Base/Modal/Modal";
 import StakeholderEdit from "../StakeholderEdit/StakeholderEdit";
 import {Project} from "actions/projects";
 import './StakeholderList.scss';
+import {FormikActions} from "formik";
 
 
 interface Props {
     stakeholders: Stakeholder[];
     project: Project;
+    onUpdate: (projectId: number) => void;
 }
 
-interface State  {
+interface State {
     tooltipStakeholder?: Stakeholder;
     modalStakeholder?: Stakeholder;
     showModal: boolean;
@@ -50,6 +52,25 @@ class StakeholderList extends Component<Props, State> {
         this.setState({showModal: false});
     };
 
+    public updateStakeholder = (values: DraftStakeholder, actions: FormikActions<DraftStakeholder>): void => {
+        if (this.state.modalStakeholder) {
+            const projectId = this.state.modalStakeholder.projectId;
+            updateStakeholder({...this.state.modalStakeholder, ...values}).then((result: boolean) => {
+                if (result) {
+                    actions.resetForm({
+                        projectId: projectId,
+                        name: values.name,
+                        company: values.company,
+                        attitude: values.attitude,
+                        role: values.role,
+                    });
+
+                    this.props.onUpdate(projectId);
+                }
+            });
+        }
+    };
+
     public render(): JSX.Element {
         const items: JSX.Element[] = [];
 
@@ -59,8 +80,9 @@ class StakeholderList extends Component<Props, State> {
             items.push(
                 <div className="entry">
                     <li key={stakeholder.id}>
-                        <Tooltip component={<StakeholderDetailTooltip stakeholder={stakeholder}/>} position={'right'}>
-                            <a onMouseEnter={this.selectTooltipStakeholder(stakeholder)} onMouseLeave={this.selectTooltipStakeholder(undefined)}>{stakeholderEntry}</a>
+                        <Tooltip component={<StakeholderDetailTooltip stakeholder={stakeholder}/>} position={'left'}>
+                            <a onMouseEnter={this.selectTooltipStakeholder(stakeholder)}
+                               onMouseLeave={this.selectTooltipStakeholder(undefined)}>{stakeholderEntry}</a>
                         </Tooltip>
                     </li>
                     <a className="button-edit" onClick={this.openStakeholderEditModal(stakeholder)}>🖋️</a>
@@ -74,7 +96,11 @@ class StakeholderList extends Component<Props, State> {
                     {items}
                 </ul>
                 {this.state.showModal && <Modal>
-                    <StakeholderEdit closeEditModal={this.closeStakeholderEditModal} project={this.props.project} stakeholder={this.state.modalStakeholder}/>
+                    <StakeholderEdit closeEditModal={this.closeStakeholderEditModal}
+                                     onSubmit={this.updateStakeholder}
+                                     project={this.props.project}
+                                     stakeholder={this.state.modalStakeholder}
+                    />
                 </Modal>}
             </Fragment>
         );

@@ -1,13 +1,15 @@
-import {Stakeholder} from "actions/stakeholder";
+import {DraftStakeholder, Stakeholder} from "actions/stakeholder";
 import React, {Component} from "react";
 import StakeholderInput from "../StakeholderInput/StakeholderInput";
 import {Project} from "actions/projects";
 import './StakeholderEdit.scss';
+import {FormikActions} from "formik";
 
 interface Props {
     project?: Project
     stakeholder?: Stakeholder;
     closeEditModal: () => void;
+    onSubmit: (values: DraftStakeholder, actions: FormikActions<DraftStakeholder>) => void
 }
 
 class StakeholderEdit extends Component<Props> {
@@ -30,8 +32,7 @@ class StakeholderEdit extends Component<Props> {
                     <div className="input">
                         <StakeholderInput
                             project={project}
-                            onSubmit={() => {
-                            }}
+                            onSubmit={this.props.onSubmit}
                             name={stakeholder.name}
                             company={stakeholder.company}
                             role={stakeholder.role}
