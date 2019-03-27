@@ -78,14 +78,14 @@ class StakeholderList extends Component<Props, State> {
             const stakeholderEntry = this.buildStakeholderEntry(stakeholder);
 
             items.push(
-                <div className="entry">
+                <div key={`div-${stakeholder.id}`} className="entry">
                     <li key={stakeholder.id}>
                         <Tooltip component={<StakeholderDetailTooltip stakeholder={stakeholder}/>} position={'left'}>
                             <a onMouseEnter={this.selectTooltipStakeholder(stakeholder)}
                                onMouseLeave={this.selectTooltipStakeholder(undefined)}>{stakeholderEntry}</a>
                         </Tooltip>
                     </li>
-                    <a className="button-edit" onClick={this.openStakeholderEditModal(stakeholder)}>🖋️</a>
+                    <a key={`edit-${stakeholder.id}`} className="button-edit" onClick={this.openStakeholderEditModal(stakeholder)}>🖋️</a>
                 </div>
             );
         }
