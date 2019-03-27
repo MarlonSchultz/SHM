@@ -19,7 +19,7 @@ export function postData(url: string = '', data: any = {}): Promise<any> {
       .then((response: any) =>
           response); // parses response to JSON
     }
-    
+
     // tslint:disable-next-line:no-any
 export function getData(url: string = ''): Promise<any> {
         // Default options are marked with *
@@ -39,4 +39,3 @@ export function getData(url: string = ''): Promise<any> {
           .then((response: any) =>
               response); // parses response to JSON
         }
-    

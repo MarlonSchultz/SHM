@@ -10,7 +10,8 @@ export function getStakeholders(projectId: number): Promise<Stakeholder[]> {
         .then((response: Response) => response.json());
 }
 
-export interface DraftStakeholder {
+export interface Stakeholder {
+    id: number;
     projectId: number;
     name: string;
     company?: string;
@@ -18,6 +19,4 @@ export interface DraftStakeholder {
     attitude?: string;
 }
 
-export interface Stakeholder extends DraftStakeholder {
-    id: number;
-}
+export type DraftStakeholder = Exclude<Stakeholder, 'id'>;

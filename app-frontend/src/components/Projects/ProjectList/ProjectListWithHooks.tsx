@@ -1,39 +1,66 @@
 import { Project } from 'actions/projects';
-import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import Input from 'components/Base/Input/Input';
 import { useGetProjects } from 'hooks/projects';
+import React, { useState, Fragment } from 'react';
+import { Link } from 'react-router-dom';
 
-interface Props {
-    projects: Project[];
-}
+function ProjectListWithHooks(): JSX.Element {
+  const resourceState = useGetProjects();
+  const [searchword, setSearchwordState] = useState('');
+  const setSearchword = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setSearchwordState(e.currentTarget.value.toLowerCase());
 
-interface State {
-    filteredProjects: Project[];
-    filter?: string;
-}
+  if (resourceState.state === 'error') {
+    return <>error: {resourceState.error}</>;
+  }
 
-function ProjectListWithHooks() {
-    const resourceState = useGetProjects();
+  if (
+    resourceState.state === 'not_initialized' ||
+    resourceState.state === 'loading'
+  ) {
+    return <>loading</>;
+  }
 
-    if (resourceState.state === 'error') {
-        return <>error: {resourceState.error}</>;
+  const buildProjectTitle = (project: Project): string =>
+    `#${project.id!} ${project.name}`;
+
+  const items = resourceState.data.map((project: Project) => {
+    let display: boolean = false;
+    if (searchword === '') {
+      display = true;
     }
-
     if (
-        resourceState.state === 'not_initialized' ||
-        resourceState.state === 'loading'
+      buildProjectTitle(project)
+        .toLowerCase()
+        .includes(searchword)
     ) {
-        return <>loading</>;
+      display = true;
+    }
+    if (
+      project.description &&
+      project.description.toLowerCase().includes(searchword)
+    ) {
+      display = true;
     }
 
-    return resourceState.data.map(project => (
+    if (display) {
+      return (
         <li key={project.id}>
-            <Link to={`/project/${project.id}`}>{`#${project.id!} ${
-                project.name
-            }`}</Link>
-            <Link to={`/project/${project.id}/edit`}>🖋️</Link>
+          <Link to={`/project/${project.id}`}>
+            {buildProjectTitle(project)}
+          </Link>
+          <Link to={`/project/${project.id}/edit`}>🖋️</Link>
         </li>
-    ));
+      );
+    }
+  });
+
+  return (
+    <Fragment>
+      <Input onChange={setSearchword} />
+      <ul>{items}</ul>
+    </Fragment>
+  );
 }
 
 export default ProjectListWithHooks;
