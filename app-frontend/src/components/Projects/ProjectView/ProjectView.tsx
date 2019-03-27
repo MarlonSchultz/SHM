@@ -41,11 +41,11 @@ class ProjectView extends Component<Props, State> {
         }
     }
 
-    public updateStakeholders(projectId: number) {
+    public updateStakeholders = (projectId: number): void => {
         getStakeholders(projectId).then((stakeholders: Stakeholder[]) => {
             this.setState({stakeholders: stakeholders});
         });
-    }
+    };
 
     public updateProject = (name: string, description?: string) => {
         if (this.props.project && this.props.project.id) {
@@ -55,7 +55,7 @@ class ProjectView extends Component<Props, State> {
                 description,
             });
         }
-    }
+    };
 
     public createStakeholder = (project: Project) =>
         (values: DraftStakeholder, actions: FormikActions<DraftStakeholder>): void => {
@@ -94,7 +94,10 @@ class ProjectView extends Component<Props, State> {
                                 project={project}
                                 onSubmit={this.createStakeholder(project)}
                             />
-                            <StakeholderList stakeholders={this.state.stakeholders}/>
+                            {this.props.project && <StakeholderList stakeholders={this.state.stakeholders}
+                                             project={this.props.project}
+                                             onUpdate={this.updateStakeholders}
+                            />}
                         </div>
                     )}
                 />

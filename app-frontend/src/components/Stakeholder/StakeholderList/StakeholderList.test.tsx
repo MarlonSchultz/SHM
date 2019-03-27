@@ -6,11 +6,23 @@ import {shallow} from "enzyme";
 describe('StakeholderList', () => {
     it('renders without crashing', () => {
         const stakeholders = new Array<Stakeholder>();
+        const project = {
+            'id': 1,
+            'name': 'Test',
+        };
+        let onUpdate = () => {};
 
-        const container = shallow(<StakeholderList stakeholders={stakeholders}/>);
+        const container = shallow(<StakeholderList stakeholders={stakeholders} project={project} onUpdate={onUpdate}/>);
     });
 
     it('renders 2 items', () => {
+        const project = {
+            'id': 1,
+            'name': 'Test',
+        };
+
+        let onUpdate = () => {};
+
         const stakeholders = [
             {
                 'id': 1,
@@ -30,7 +42,7 @@ describe('StakeholderList', () => {
             },
         ];
 
-        const container = shallow(<StakeholderList stakeholders={stakeholders}/>);
+        const container = shallow(<StakeholderList stakeholders={stakeholders} project={project} onUpdate={onUpdate}/>);
 
         expect(container.find('li').length).toBe(2);
         expect(container.contains('#1 Eckbert')).toBe(true);
