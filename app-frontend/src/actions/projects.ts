@@ -21,4 +21,4 @@ export interface Project {
     description?: string;
 }
 
-export type DraftProject = Exclude<Project, 'id'>;
+export type DraftProject = Pick<Project, Exclude<keyof Project, 'id'>>;
