@@ -16,6 +16,7 @@ class Stakeholder(db.Model):
     attitude = db.Column(db.String(300), unique=False, nullable=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
     archived = db.Column(db.Boolean(), unique=False, nullable=False, default=False)
+    comments = db.relationship('Comment', backref='stakeholder', lazy=True)
 
     def to_json(self):
         """
@@ -27,7 +28,7 @@ class Stakeholder(db.Model):
                 'projectId': self.project_id, 'archived': self.archived}
 
 
-def create_stakeholder(project_id: int, name: str, company: str, role: str, attitude: str):
+def create_stakeholder(project_id: int, name: str, company: str, role: str, attitude: str) -> Stakeholder:
     """
     Create a stakeholder and add it to the database.
 
