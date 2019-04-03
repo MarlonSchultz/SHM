@@ -15,6 +15,7 @@ class Stakeholder(db.Model):
     role = db.Column(db.String(300), unique=False, nullable=True)
     attitude = db.Column(db.String(300), unique=False, nullable=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
+    archived = db.Column(db.Boolean(), unique=False, nullable=False, default=False)
 
     def to_json(self):
         """
@@ -23,7 +24,7 @@ class Stakeholder(db.Model):
         :return: The json formatted fields.
         """
         return {'id': self.id, 'name': self.name, 'company': self.company, 'role': self.role, 'attitude': self.attitude,
-                'projectId': self.project_id}
+                'projectId': self.project_id, 'archived': self.archived}
 
 
 def create_stakeholder(project_id: int, name: str, company: str, role: str, attitude: str):
@@ -50,12 +51,12 @@ def list_stakeholders(project_id: int) -> []:
 
     :return: The fetched project list.
     """
-    stakeholder_list = Stakeholder.query.filter_by(project_id=project_id).all()
+    stakeholder_list = Stakeholder.query.filter_by(project_id=project_id, archived=False).all()
     return stakeholder_list
 
 
 def update_stakeholder(id: int, name: str = None, company: str = None, role: str = None,
-                       attitude: str = None) -> Stakeholder or None:
+                       attitude: str = None, archived: bool = None) -> Stakeholder or None:
     """
     Provide a POST API endpoint for updating a specific stakeholder.
 
@@ -76,6 +77,7 @@ def update_stakeholder(id: int, name: str = None, company: str = None, role: str
         stakeholder.company = company if company is not None else stakeholder.company
         stakeholder.role = role if role is not None else stakeholder.role
         stakeholder.attitude = attitude if attitude is not None else stakeholder.attitude
+        stakeholder.archived = archived if archived is not None else stakeholder.archived
 
         db.session.commit()
 
@@ -137,8 +139,9 @@ def update_existing_stakeholder(project_id: int, stakeholder_id: int):
         company = json_data['company'] if 'company' in json_data else None
         role = json_data['role'] if 'role' in json_data else None
         attitude = json_data['attitude'] if 'attitude' in json_data else None
+        archived = json_data['archived'] if 'archived' in json_data else None
 
-        stakeholder = update_stakeholder(stakeholder_id, name=name, company=company, role=role, attitude=attitude)
+        stakeholder = update_stakeholder(stakeholder_id, name=name, company=company, role=role, attitude=attitude, archived=archived)
 
         return Response(status='201 Created',
                         headers={'Location': f'/project/{project_id}/stakeholder/{stakeholder_id}'})

@@ -48,6 +48,17 @@ class StakeholderList extends Component<Props, State> {
         });
     };
 
+    archiveStakeholder = (stakeholder?: Stakeholder) => () => {
+        if (stakeholder) {
+            updateStakeholder({...stakeholder, archived: true})
+            .then((result: boolean) => {
+                if (result) {
+                    this.props.onUpdate(stakeholder.projectId);
+                }
+            });
+        }
+    }
+
     closeStakeholderEditModal = () => {
         this.setState({showModal: false});
     };
@@ -86,6 +97,7 @@ class StakeholderList extends Component<Props, State> {
                         </Tooltip>
                     </li>
                     <a key={`edit-${stakeholder.id}`} className="button-edit" onClick={this.openStakeholderEditModal(stakeholder)}>🖋️</a>
+                    <a key={`archive-${stakeholder.id}`} className="button-edit" onClick={this.archiveStakeholder(stakeholder)}>🗄️</a>
                 </div>
             );
         }

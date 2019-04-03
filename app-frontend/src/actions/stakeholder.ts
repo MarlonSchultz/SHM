@@ -22,6 +22,7 @@ export interface DraftStakeholder {
     company?: string;
     role?: string;
     attitude?: string;
+    archived?: boolean;
 }
 
 export interface Stakeholder extends DraftStakeholder {

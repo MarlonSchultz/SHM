@@ -280,6 +280,25 @@ class StakeholderUpdateTestCase(unittest.TestCase):
         self.assertEqual(response.headers['Location'], f'http://localhost/project/1/stakeholder/{self.stakeholder_id}')
 
     @mock.patch("app.stakeholder.update_stakeholder")
+    def test_archive_stakeholder_endpoint(self, mock_update_stakeholder):
+        mock_update_stakeholder.return_value = app.stakeholder.Stakeholder(id=self.stakeholder_id,
+                                                                           project_id=1,
+                                                                           name=self.stakeholder_name,
+                                                                           company=self.stakeholder_company,
+                                                                           role=self.stakeholder_role,
+                                                                           attitude=self.stakeholder_attitude,
+                                                                           archived=True)
+
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}', json={
+            'name': self.stakeholder_name, 'company': self.stakeholder_company, 'role': self.stakeholder_company,
+            'attitude': self.stakeholder_attitude, 'archived': True,
+        })
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIn(member='Location', container=response.headers)
+        self.assertEqual(response.headers['Location'], f'http://localhost/project/1/stakeholder/{self.stakeholder_id}')
+
+    @mock.patch("app.stakeholder.update_stakeholder")
     def test_update_stakeholder_endpoint_empty_json(self, mock_update_stakeholder):
         response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}', json={})
 
