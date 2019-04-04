@@ -3,11 +3,11 @@ import { useApiResource, ApiResourceState } from './useApiResource';
 import { useApiResourcePost } from './useApiResourcePost';
 
 export function useGetProjects(): ApiResourceState<Project[]> {
-    return useApiResource<Project[]>('/projects');
+    return useApiResource<Project[]>('/projects', undefined, {method:'GET'});
 }
 
 export function useAddProject(
-    draft: DraftProject
+    draft: DraftProject,
 ): [() => Promise<boolean>, ApiResourceState<unknown>] {
     const [startRequest, apiResourceState] = useApiResourcePost<
         unknown,

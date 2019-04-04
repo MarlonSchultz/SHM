@@ -21,7 +21,8 @@ export type ApiResourceState<T> =
       };
 
 export function useApiResourcePost<Data, RequestVariables = never>(
-    url: string
+    url: string,
+    request?: Partial<RequestInit>
 ): [
     (data: RequestVariables) => Promise<[Data, Response]>,
     ApiResourceState<Data>
@@ -43,7 +44,7 @@ export function useApiResourcePost<Data, RequestVariables = never>(
             abortController.current.abort();
         }
         abortController.current = new AbortController();
-        return fetch(`${api.api}${url}`, {
+        let fetchParams: RequestInit = {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
@@ -55,7 +56,12 @@ export function useApiResourcePost<Data, RequestVariables = never>(
             referrer: 'no-referrer',
             body: !data ? undefined : JSON.stringify(data),
             signal: abortController.current.signal
-        })
+        };
+        if (request) {
+            fetchParams = {...fetchParams, ...request};
+        }
+        setState({ state: 'loading' });
+        return fetch(`${api.api}${url}`, fetchParams)
             .then(response => Promise.all([response.json(), response]))
             .then(([data, response]: [Data, Response]) => {
                 abortController.current = undefined;

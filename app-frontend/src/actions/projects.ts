@@ -15,11 +15,10 @@ export function getProjects(): Promise<Project[]> {
     .then((response: Response) => response.json());
 }
 
-export interface DraftProject {
+export interface Project {
+    id: number;
     name: string;
     description?: string;
 }
 
-export interface Project extends DraftProject {
-    id: number;
-}
+export type DraftProject = Pick<Project, Exclude<keyof Project, 'id'>>;

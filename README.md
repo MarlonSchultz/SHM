@@ -105,4 +105,5 @@ Flask Mocking Part #1: https://medium.com/python-pandemonium/python-mocking-you-
 Flask Mocking Part #2: https://medium.com/python-pandemonium/surrender-python-mocking-i-have-you-now-5805e91cfbf4
 
 ## FrontEnd Development
-Insert info
+
+See the [app-frontend README](app-frontend/README.md) for infos

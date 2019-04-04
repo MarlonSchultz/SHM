@@ -22,14 +22,15 @@ export type ApiResourceState<T> =
 
 export function useApiResource<Data, RequestVariables = never>(
     url: string,
-    data?: RequestVariables
+    data?: RequestVariables,
+    request?: Partial<RequestInit>
 ): ApiResourceState<Data> {
     const [state, setState] = useState<ApiResourceState<Data>>({
         state: 'not_initialized'
     });
     const api = useContext(ApiContext);
 
-    useEffect(() => {
+    useEffect(() =>  {
         if (!api) {
             throw new Error(
                 'useApiResource can only be used when wrapped in ApiContext.Provider'
@@ -39,7 +40,8 @@ export function useApiResource<Data, RequestVariables = never>(
         // if you want to add caching, here would be a good place to do something with api.cache
 
         let abortController: AbortController | null = new AbortController();
-        fetch(`${api.api}${url}`, {
+
+        let fetchParams: RequestInit = {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
@@ -51,7 +53,14 @@ export function useApiResource<Data, RequestVariables = never>(
             referrer: 'no-referrer',
             body: !data ? undefined : JSON.stringify(data),
             signal: abortController.signal
-        })
+        };
+
+        if (request) {
+            fetchParams = {...fetchParams, ...request};
+        }
+
+        setState({ state: 'loading' });
+        fetch(`${api.api}${url}`, fetchParams)
             .then(response => response.json())
             .then((data: Data) => {
                 abortController = null;
@@ -64,6 +73,7 @@ export function useApiResource<Data, RequestVariables = never>(
                     setState({ state: 'error', error: e });
                 }
             });
+            
         return () => void (abortController && abortController.abort());
     }, [url, data]);
 
