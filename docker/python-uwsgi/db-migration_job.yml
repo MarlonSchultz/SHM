@@ -1,26 +1,15 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: python-api
-  labels:
-    app: python-api
+  name: db-migrator
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: python-api
   template:
-    metadata:
-      labels:
-        app: python-api
     spec:
-      hostname: python-uwsgi
       containers:
-        - name: python-uwsgi
-          image: 736336118102.dkr.ecr.eu-central-1.amazonaws.com/shm:python.uwsgi.1
-          ports:
-            - containerPort: 8080
-          env:
+      - name: pytho-db-migrator
+        image: 736336118102.dkr.ecr.eu-central-1.amazonaws.com/shm:python.uwsgi.1
+        command: ["flask",  "db", "upgrade"]
+        env:
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
@@ -40,8 +29,5 @@ spec:
               value: postgres-database-server
             - name: POSTGRES_PORT
               value: "5432"
-
-        - name: python-nginx
-          image: 736336118102.dkr.ecr.eu-central-1.amazonaws.com/shm:python.nginx.1
-          ports:
-            - containerPort: 80
+      restartPolicy: Never
+  backoffLimit: 4

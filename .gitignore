@@ -9,3 +9,6 @@ __pycache__
 
 # No "persisted" postgres data_
 postgres/data/*
+
+# No secrets in git
+docker/secrets/*
