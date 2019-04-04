@@ -23,6 +23,7 @@ export interface Stakeholder {
     company?: string;
     role?: string;
     attitude?: string;
+    archived?: boolean;
 }
 
 export type DraftStakeholder = Pick<Stakeholder, Exclude<keyof Stakeholder, 'id'>>;
