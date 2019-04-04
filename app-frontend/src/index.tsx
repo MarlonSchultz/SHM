@@ -7,7 +7,7 @@ import * as serviceWorker from './serviceWorker';
 import { ApiContext, ApiContextShape } from 'components/ApiContext';
 
 const apiContext: ApiContextShape = {
-    api: 'http://localhost:8081'
+    api: String(process.env.REACT_APP_API_ENDPOINT),
 };
 
 ReactDOM.render(

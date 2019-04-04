@@ -2,7 +2,7 @@
 // tslint:disable-next-line:no-any
 export function postData(url: string = '', data: any = {}): Promise<any> {
     // Default options are marked with *
-      return fetch(`http://localhost:8081${url}`, {
+      return fetch(`${process.env.REACT_APP_API_ENDPOINT}${url}`, {
           method: 'POST', // *GET, POST, PUT, DELETE, etc.
           mode: 'cors', // no-cors, cors, *same-origin
           cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -23,7 +23,7 @@ export function postData(url: string = '', data: any = {}): Promise<any> {
     // tslint:disable-next-line:no-any
 export function getData(url: string = ''): Promise<any> {
         // Default options are marked with *
-          return fetch(`http://localhost:8081${url}`, {
+          return fetch(`${process.env.REACT_APP_API_ENDPOINT}${url}`, {
               method: 'GET', // *GET, POST, PUT, DELETE, etc.
               mode: 'cors', // no-cors, cors, *same-origin
               cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
