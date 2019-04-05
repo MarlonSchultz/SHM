@@ -23,5 +23,6 @@ storiesOf('StakeholderInput', module)
                 role={role}
                 attitude={attitude}
                 onSubmit={action('submit')}
-            />);
+            />
+        );
     });

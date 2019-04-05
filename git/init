@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if [ ! -f .git/hooks/pre-commit ]; then
+    echo "pre-commit hook not found!"
+    ln -s ../../git/hooks/pre-commit .git/hooks/pre-commit
+    echo "pre-commit hook installed"
+fi

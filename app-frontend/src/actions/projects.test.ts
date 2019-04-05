@@ -1,10 +1,9 @@
-import * as http from './http'
+import * as http from './http';
 import { getProjects, addProject, updateProject, DraftProject, Project } from './projects';
 
 jest.mock('./http');
 
 describe('Project Tests', () => {
-
     it('returns a list of projects', (done) => {
         const mockSuccessResponse = [
             {
@@ -19,11 +18,12 @@ describe('Project Tests', () => {
             },
         ];
         const mockJsonPromise = Promise.resolve(mockSuccessResponse); // 2
-        const mockFetchPromise = Promise.resolve({ // 3
+        const mockFetchPromise = Promise.resolve({
+            // 3
             json: () => mockJsonPromise,
         });
 
-        const mockedDependency = <jest.Mock>http.getData;
+        const mockedDependency = http.getData as jest.Mock;
         mockedDependency.mockReturnValueOnce(mockFetchPromise);
 
         return getProjects().then((data) => {
@@ -37,20 +37,20 @@ describe('Project Tests', () => {
     });
 
     it('adds a project', (done) => {
-        const mockedDependency = <jest.Mock>http.postData;
+        const mockedDependency = http.postData as jest.Mock;
         mockedDependency.mockReturnValueOnce(Promise.resolve({ status: 201 }));
 
         const input: DraftProject = {
             name: 'Conject',
-            description: 'A Project'
+            description: 'A Project',
         };
 
-        addProject(input).then(value => {
+        addProject(input).then((value) => {
             expect(value).toBe(true);
             expect(mockedDependency.mock.calls[0][0]).toEqual('/projects');
             expect(mockedDependency.mock.calls[0][1]).toEqual({
                 name: 'Conject',
-                description: 'A Project'
+                description: 'A Project',
             });
 
             mockedDependency.mockReset();
@@ -59,14 +59,14 @@ describe('Project Tests', () => {
     });
 
     it('updates a project', (done) => {
-        const mockedDependency = <jest.Mock>http.postData;
+        const mockedDependency = http.postData as jest.Mock;
         mockedDependency.mockReturnValueOnce(Promise.resolve({ status: 201 }));
 
         const update: Project = {
             id: 1,
             name: 'New Name',
             description: 'New Desc',
-        }
+        };
 
         updateProject(update).then((value) => {
             expect(value.id).toEqual(1);
@@ -77,11 +77,11 @@ describe('Project Tests', () => {
             expect(mockedDependency.mock.calls[0][1]).toEqual({
                 id: 1,
                 name: 'New Name',
-                description: 'New Desc'
+                description: 'New Desc',
             });
 
             mockedDependency.mockReset();
             done();
-        })
+        });
     });
 });

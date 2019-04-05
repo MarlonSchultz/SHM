@@ -1,9 +1,9 @@
-import React, {Component} from "react";
+import React, { Component } from 'react';
 import './Tooltip.scss';
 
 interface Props {
-    component: JSX.Element,
-    position: string,
+    component: JSX.Element;
+    position: string;
 }
 
 interface State {
@@ -17,10 +17,10 @@ class Tooltip extends Component<Props, State> {
         this.state = {
             displayTooltip: false,
         };
-    };
+    }
 
-    showTooltip = (show: boolean) => () => {
-        this.setState({displayTooltip: show});
+    public showTooltip = (show: boolean) => () => {
+        this.setState({ displayTooltip: show });
     };
 
     public render(): JSX.Element {
@@ -28,12 +28,13 @@ class Tooltip extends Component<Props, State> {
         const position = this.props.position;
 
         return (
-            <span className='tooltip' onMouseLeave={this.showTooltip(false)}>
-                {this.state.displayTooltip &&
-                <div className={`tooltip-bubble tooltip-${position}`}>
-                    <div className='tooltip-message'>{component}</div>
-                </div>}
-                <span className='tooltip-trigger' onMouseEnter={this.showTooltip(true)}>
+            <span className="tooltip" onMouseLeave={this.showTooltip(false)}>
+                {this.state.displayTooltip && (
+                    <div className={`tooltip-bubble tooltip-${position}`}>
+                        <div className="tooltip-message">{component}</div>
+                    </div>
+                )}
+                <span className="tooltip-trigger" onMouseEnter={this.showTooltip(true)}>
                     {this.props.children}
                 </span>
             </span>

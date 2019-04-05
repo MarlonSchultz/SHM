@@ -1,12 +1,12 @@
 import { Project } from 'actions/projects';
-import {addStakeholder, DraftStakeholder, getStakeholders, Stakeholder} from 'actions/stakeholder';
+import { addStakeholder, DraftStakeholder, getStakeholders, Stakeholder } from 'actions/stakeholder';
 import StakeholderInput from 'components/Stakeholder/StakeholderInput/StakeholderInput';
 import { FormikActions } from 'formik';
 import React, { Component } from 'react';
 import { withRouter, Route, RouteComponentProps, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 import ProjectInput from '../ProjectInput/ProjectInput';
-import StakeholderList from "../../Stakeholder/StakeholderList/StakeholderList";
+import StakeholderList from '../../Stakeholder/StakeholderList/StakeholderList';
 
 interface Props extends RouteComponentProps {
     project?: Project;
@@ -18,22 +18,21 @@ interface State {
 }
 
 class ProjectView extends Component<Props, State> {
-
     public constructor(props: Props) {
         super(props);
 
         this.state = {
             stakeholders: [],
-        }
+        };
     }
 
     public componentDidMount(): void {
         if (this.props.project) {
             this.updateStakeholders(this.props.project.id);
         }
-    };
+    }
 
-    public componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
+    public componentDidUpdate(prevProps: Readonly<Props>): void {
         if (prevProps.project != this.props.project) {
             if (this.props.project) {
                 this.updateStakeholders(this.props.project.id);
@@ -43,7 +42,7 @@ class ProjectView extends Component<Props, State> {
 
     public updateStakeholders = (projectId: number): void => {
         getStakeholders(projectId).then((stakeholders: Stakeholder[]) => {
-            this.setState({stakeholders: stakeholders});
+            this.setState({ stakeholders: stakeholders });
         });
     };
 
@@ -57,9 +56,12 @@ class ProjectView extends Component<Props, State> {
         }
     };
 
-    public createStakeholder = (project: Project) =>
-        (values: DraftStakeholder, actions: FormikActions<DraftStakeholder>): void => {
-            addStakeholder(values).then((result: boolean) => {
+    public createStakeholder = (project: Project) => (
+        values: DraftStakeholder,
+        actions: FormikActions<DraftStakeholder>
+    ): void => {
+        addStakeholder(values)
+            .then((result: boolean) => {
                 if (result) {
                     actions.resetForm({
                         projectId: project.id,
@@ -69,16 +71,16 @@ class ProjectView extends Component<Props, State> {
                         role: '',
                     });
                 }
-            }).then(() => {
+            })
+            .then(() => {
                 this.updateStakeholders(project.id);
             });
-
-        };
+    };
 
     public render(): JSX.Element {
         const { match, project } = this.props;
         if (!project) {
-            return (<div>No data</div>);
+            return <div>No data</div>;
         }
 
         return (
@@ -88,16 +90,18 @@ class ProjectView extends Component<Props, State> {
                     exact={true}
                     render={() => (
                         <div>
-                            <h1>#{project.id} {project.name} <Link to={`${match.url}/edit`}>🖋️</Link></h1>
+                            <h1>
+                                #{project.id} {project.name} <Link to={`${match.url}/edit`}>🖋️</Link>
+                            </h1>
                             <p>{project.description}</p>
-                            <StakeholderInput
-                                project={project}
-                                onSubmit={this.createStakeholder(project)}
-                            />
-                            {this.props.project && <StakeholderList stakeholders={this.state.stakeholders}
-                                             project={this.props.project}
-                                             onUpdate={this.updateStakeholders}
-                            />}
+                            <StakeholderInput project={project} onSubmit={this.createStakeholder(project)} />
+                            {this.props.project && (
+                                <StakeholderList
+                                    stakeholders={this.state.stakeholders}
+                                    project={this.props.project}
+                                    onUpdate={this.updateStakeholders}
+                                />
+                            )}
                         </div>
                     )}
                 />

@@ -1,32 +1,32 @@
 import React from 'react';
-import StakeholderDetailTooltip from "./StakeholderDetailTooltip";
-import {shallow} from "enzyme";
+import StakeholderDetailTooltip from './StakeholderDetailTooltip';
+import { shallow } from 'enzyme';
 
 describe('StakeholderDetailTooltip', () => {
     it('renders without crashing', () => {
         const stakeholder = {
-            'id': 1,
-            'name': 'Eckbert',
-            'company': 'Macrohard',
-            'role': 'Know-It-All',
-            'attitude': 'also ich würde das so machen',
-            'projectId': 1,
+            id: 1,
+            name: 'Eckbert',
+            company: 'Macrohard',
+            role: 'Know-It-All',
+            attitude: 'also ich würde das so machen',
+            projectId: 1,
         };
 
-        const container = shallow(<StakeholderDetailTooltip stakeholder={stakeholder}/>);
+        shallow(<StakeholderDetailTooltip stakeholder={stakeholder} />);
     });
 
     it('renders the stakeholder', () => {
         const stakeholder = {
-            'id': 1,
-            'name': 'Eckbert',
-            'company': 'Macrohard',
-            'role': 'Know-It-All',
-            'attitude': 'also ich würde das so machen',
-            'projectId': 1,
+            id: 1,
+            name: 'Eckbert',
+            company: 'Macrohard',
+            role: 'Know-It-All',
+            attitude: 'also ich würde das so machen',
+            projectId: 1,
         };
 
-        const container = shallow(<StakeholderDetailTooltip stakeholder={stakeholder}/>);
+        const container = shallow(<StakeholderDetailTooltip stakeholder={stakeholder} />);
 
         expect(container.find('p').length).toBe(4);
         expect(container.contains('Eckbert')).toBe(true);

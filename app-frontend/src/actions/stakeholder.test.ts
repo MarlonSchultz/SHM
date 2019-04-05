@@ -1,12 +1,11 @@
-import * as http from './http'
-import { addStakeholder } from './stakeholder'
+import * as http from './http';
+import { addStakeholder } from './stakeholder';
 
 jest.mock('./http');
 
 describe('Stakeholder Tests', () => {
-
     it('adds a stakeholder', (done) => {
-        const mockedDependency = <jest.Mock>http.postData;
+        const mockedDependency = http.postData as jest.Mock;
         mockedDependency.mockReturnValueOnce(Promise.resolve({ status: 201 }));
 
         addStakeholder({
@@ -14,7 +13,7 @@ describe('Stakeholder Tests', () => {
             name: 'Bernd',
             company: 'Kika',
             role: 'Brot',
-            attitude: 'Mist'
+            attitude: 'Mist',
         }).then((value) => {
             expect(value).toEqual(true);
             expect(mockedDependency.mock.calls[0][0]).toEqual('/project/1/stakeholder');
@@ -23,13 +22,11 @@ describe('Stakeholder Tests', () => {
                 name: 'Bernd',
                 company: 'Kika',
                 role: 'Brot',
-                attitude: 'Mist'
-            })
+                attitude: 'Mist',
+            });
 
             mockedDependency.mockReset();
             done();
         });
-
     });
-
 });

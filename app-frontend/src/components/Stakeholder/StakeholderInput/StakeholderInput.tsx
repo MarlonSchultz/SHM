@@ -21,7 +21,6 @@ interface DefaultProps {
 const classes = new BEMHelper('StakeholderInput');
 
 class StakeholderInput extends Component<Props> {
-
     public static defaultProps: DefaultProps = {
         isUpdate: false,
     };
@@ -34,39 +33,19 @@ class StakeholderInput extends Component<Props> {
         }
         return (
             <div {...classes()}>
-                <h1>{this.props.isUpdate ? 'Update' : 'Add'} Stakeholder for "{this.props.project.name}"</h1>
+                <h1>
+                    {this.props.isUpdate ? 'Update' : 'Add'} Stakeholder for &quote;{this.props.project.name}&quote;
+                </h1>
                 <Formik
-                    initialValues={{name, company, role, attitude, projectId: this.props.project.id!}}
+                    initialValues={{ name, company, role, attitude, projectId: this.props.project.id }}
                     onSubmit={this.props.onSubmit}
                     render={() => (
                         <Form>
-                            <Field
-                                type="text"
-                                name="name"
-                                label="Stakeholder Name"
-                                placeholder="Stakeholder"
-                            />
-                            <Field
-                                type="text"
-                                name="company"
-                                label="Company Name"
-                                placeholder="Company"
-                            />
-                            <Field
-                                type="text"
-                                name="role"
-                                label="Role"
-                                placeholder="Role"
-                            />
-                            <Field
-                                type="text"
-                                name="attitude"
-                                label="Attiude"
-                                placeholder="Attiude"
-                            />
-                            <button type="submit">
-                                {this.props.isUpdate ? 'Update': 'Create'}
-                            </button>
+                            <Field type="text" name="name" label="Stakeholder Name" placeholder="Stakeholder" />
+                            <Field type="text" name="company" label="Company Name" placeholder="Company" />
+                            <Field type="text" name="role" label="Role" placeholder="Role" />
+                            <Field type="text" name="attitude" label="Attiude" placeholder="Attiude" />
+                            <button type="submit">{this.props.isUpdate ? 'Update' : 'Create'}</button>
                         </Form>
                     )}
                 />

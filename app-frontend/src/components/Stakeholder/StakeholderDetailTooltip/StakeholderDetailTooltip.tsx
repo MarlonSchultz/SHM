@@ -1,12 +1,11 @@
-import React, {Component} from "react";
-import {Stakeholder} from "actions/stakeholder";
+import React, { Component } from 'react';
+import { Stakeholder } from 'actions/stakeholder';
 
 interface Props {
     stakeholder: Stakeholder;
 }
 
 class StakeholderDetailTooltip extends Component<Props> {
-
     public render(): JSX.Element {
         return (
             <div>

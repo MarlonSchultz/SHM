@@ -2,7 +2,7 @@
 // this has no use if I don't have your prettierrc
 
 import { ApiContext } from '../components/ApiContext';
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 
 export type ApiResourceState<T> =
     | {
@@ -26,15 +26,13 @@ export function useApiResource<Data, RequestVariables = never>(
     request?: Partial<RequestInit>
 ): ApiResourceState<Data> {
     const [state, setState] = useState<ApiResourceState<Data>>({
-        state: 'not_initialized'
+        state: 'not_initialized',
     });
     const api = useContext(ApiContext);
 
-    useEffect(() =>  {
+    useEffect(() => {
         if (!api) {
-            throw new Error(
-                'useApiResource can only be used when wrapped in ApiContext.Provider'
-            );
+            throw new Error('useApiResource can only be used when wrapped in ApiContext.Provider');
         }
 
         // if you want to add caching, here would be a good place to do something with api.cache
@@ -47,33 +45,33 @@ export function useApiResource<Data, RequestVariables = never>(
             cache: 'no-cache',
             credentials: 'same-origin',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             redirect: 'follow',
             referrer: 'no-referrer',
             body: !data ? undefined : JSON.stringify(data),
-            signal: abortController.signal
+            signal: abortController.signal,
         };
 
         if (request) {
-            fetchParams = {...fetchParams, ...request};
+            fetchParams = { ...fetchParams, ...request };
         }
 
         setState({ state: 'loading' });
         fetch(`${api.api}${url}`, fetchParams)
-            .then(response => response.json())
+            .then((response) => response.json())
             .then((data: Data) => {
                 abortController = null;
                 setState({ state: 'success', data });
             })
-            .catch(e => {
+            .catch((e) => {
                 if ('name' in e && (e as DOMException).name === 'AbortError') {
                     setState({ state: 'not_initialized' });
                 } else {
                     setState({ state: 'error', error: e });
                 }
             });
-            
+
         return () => void (abortController && abortController.abort());
     }, [url, data]);
 

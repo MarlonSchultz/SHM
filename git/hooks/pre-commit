@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+export CI=true
+
+cd app-frontend
+yarn test
+yarn lint
+cd ..
+
+cd app-backend
+source venv/bin/activate
+./test.sh

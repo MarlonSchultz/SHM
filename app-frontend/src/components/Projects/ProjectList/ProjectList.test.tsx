@@ -4,19 +4,14 @@ import ProjectList from './ProjectList';
 import { Project } from 'actions/projects';
 
 describe('ProjectList', () => {
-
     it('renders without crashing', () => {
         const projects = new Array<Project>();
-    
-        const container = shallow(<ProjectList projects={projects} />);
+
+        shallow(<ProjectList projects={projects} />);
     });
-    
-    
+
     it('renders 2 items', () => {
-        const projects = [
-            {id:1, name: 'Eins'},
-            {id:2, name: 'Zwei'},
-        ];
+        const projects = [{ id: 1, name: 'Eins' }, { id: 2, name: 'Zwei' }];
 
         const container = shallow(<ProjectList projects={projects} />);
 

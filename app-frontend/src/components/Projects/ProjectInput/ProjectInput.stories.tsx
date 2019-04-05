@@ -7,21 +7,18 @@ import ProjectInput from './ProjectInput';
 import ProjectInputWithHooks from './ProjectInputWithHooks';
 
 const apiContext: ApiContextShape = {
-  api: 'https://apiserver',
+    api: 'https://apiserver',
 };
 
 storiesOf('ProjectInput', module)
-  .add('default', () => <ProjectInput onSave={action('onSave')}/>)
-  .add('hooks', () => {
-    // test
-    fetchMock.restore().post(
-      'https://apiserver/projects',
-      new Response('{}', {status: 201}),
-    );
+    .add('default', () => <ProjectInput onSave={action('onSave')} />)
+    .add('hooks', () => {
+        // test
+        fetchMock.restore().post('https://apiserver/projects', new Response('{}', { status: 201 }));
 
-    return (
-      <ApiContext.Provider value={apiContext}>
-        <ProjectInputWithHooks postSubmit={action('onSubmit')} submitLabel="Create" />
-      </ApiContext.Provider>
-    );
-  });
+        return (
+            <ApiContext.Provider value={apiContext}>
+                <ProjectInputWithHooks postSubmit={action('onSubmit')} submitLabel="Create" />
+            </ApiContext.Provider>
+        );
+    });

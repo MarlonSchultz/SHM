@@ -1,15 +1,15 @@
-import {DraftStakeholder, Stakeholder} from "actions/stakeholder";
-import React, {Component} from "react";
-import StakeholderInput from "../StakeholderInput/StakeholderInput";
-import {Project} from "actions/projects";
+import { DraftStakeholder, Stakeholder } from 'actions/stakeholder';
+import React, { Component } from 'react';
+import StakeholderInput from '../StakeholderInput/StakeholderInput';
+import { Project } from 'actions/projects';
 import './StakeholderEdit.scss';
-import {FormikActions} from "formik";
+import { FormikActions } from 'formik';
 
 interface Props {
-    project?: Project
+    project?: Project;
     stakeholder?: Stakeholder;
     closeEditModal: () => void;
-    onSubmit: (values: DraftStakeholder, actions: FormikActions<DraftStakeholder>) => void
+    onSubmit: (values: DraftStakeholder, actions: FormikActions<DraftStakeholder>) => void;
 }
 
 class StakeholderEdit extends Component<Props> {
@@ -18,9 +18,9 @@ class StakeholderEdit extends Component<Props> {
     }
 
     public render(): JSX.Element {
-        const {project, stakeholder} = this.props;
+        const { project, stakeholder } = this.props;
         if (!project || !stakeholder) {
-            return (<div>No data</div>);
+            return <div>No data</div>;
         }
 
         return (

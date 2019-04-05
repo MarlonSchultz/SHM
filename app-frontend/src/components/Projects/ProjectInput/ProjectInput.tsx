@@ -22,7 +22,6 @@ export interface ProjectInputState {
 const classes = new BEMHelper('ProjectInput');
 
 class ProjectInput extends Component<Props, ProjectInputState> {
-
     public static defaultProps: DefaultProps = {
         buttonLabel: 'Create',
     };
@@ -37,23 +36,23 @@ class ProjectInput extends Component<Props, ProjectInputState> {
     }
 
     public create = () => {
-        this.setState({missingName: this.state.name === ''});
+        this.setState({ missingName: this.state.name === '' });
 
         if (this.state.name !== '') {
             this.props.onSave(this.state.name, this.state.description);
         }
-    }
+    };
 
     public handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         switch (event.target.name) {
             case 'name':
-                this.setState({name: event.target.value, missingName: event.target.value === ''});
+                this.setState({ name: event.target.value, missingName: event.target.value === '' });
                 break;
             case 'description':
-                this.setState({description: event.target.value});
+                this.setState({ description: event.target.value });
                 break;
         }
-    }
+    };
 
     public render(): JSX.Element {
         return (
@@ -64,10 +63,7 @@ class ProjectInput extends Component<Props, ProjectInputState> {
                         name="name"
                         onChange={this.handleChange}
                         value={this.state.name}
-                        {...classes('input', [
-                            'text',
-                            this.state.missingName ? 'error' : '',
-                        ])}
+                        {...classes('input', ['text', this.state.missingName ? 'error' : ''])}
                     />
                 </div>
                 <div {...classes('row')}>
@@ -80,7 +76,9 @@ class ProjectInput extends Component<Props, ProjectInputState> {
                     />
                 </div>
                 <div {...classes('row')}>
-                    <button onClick={this.create} {...classes('button')}>{this.props.buttonLabel}</button>
+                    <button onClick={this.create} {...classes('button')}>
+                        {this.props.buttonLabel}
+                    </button>
                 </div>
             </div>
         );

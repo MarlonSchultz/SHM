@@ -1,13 +1,12 @@
-import {DraftStakeholder, Stakeholder, updateStakeholder} from "actions/stakeholder";
-import React, {Component, Fragment} from "react";
-import Tooltip from "../../Base/Tooltip/Tooltip";
-import StakeholderDetailTooltip from "../StakeholderDetailTooltip/StakeholderDetailTooltip";
-import Modal from "../../Base/Modal/Modal";
-import StakeholderEdit from "../StakeholderEdit/StakeholderEdit";
-import {Project} from "actions/projects";
+import { DraftStakeholder, Stakeholder, updateStakeholder } from 'actions/stakeholder';
+import React, { Component, Fragment } from 'react';
+import Tooltip from '../../Base/Tooltip/Tooltip';
+import StakeholderDetailTooltip from '../StakeholderDetailTooltip/StakeholderDetailTooltip';
+import Modal from '../../Base/Modal/Modal';
+import StakeholderEdit from '../StakeholderEdit/StakeholderEdit';
+import { Project } from 'actions/projects';
 import './StakeholderList.scss';
-import {FormikActions} from "formik";
-
+import { FormikActions } from 'formik';
 
 interface Props {
     stakeholders: Stakeholder[];
@@ -21,8 +20,11 @@ interface State {
     showModal: boolean;
 }
 
-class StakeholderList extends Component<Props, State> {
+interface VoidCallback {
+    (): void;
+}
 
+class StakeholderList extends Component<Props, State> {
     public constructor(props: Props) {
         super(props);
 
@@ -31,54 +33,57 @@ class StakeholderList extends Component<Props, State> {
             modalStakeholder: undefined,
             showModal: false,
         };
-    };
+    }
 
-    buildStakeholderEntry = (stakeholder: Stakeholder): string => {
+    public buildStakeholderEntry = (stakeholder: Stakeholder): string => {
         return `#${stakeholder.id} ${stakeholder.name}`;
     };
 
-    selectTooltipStakeholder = (stakeholder?: Stakeholder) => () => {
-        this.setState({tooltipStakeholder: stakeholder});
+    public selectTooltipStakeholder = (stakeholder?: Stakeholder): VoidCallback => (): void => {
+        this.setState({ tooltipStakeholder: stakeholder });
     };
 
-    openStakeholderEditModal = (stakeholder?: Stakeholder) => () => {
+    public openStakeholderEditModal = (stakeholder?: Stakeholder): VoidCallback => (): void => {
         this.setState({
             modalStakeholder: stakeholder,
             showModal: true,
         });
     };
 
-    archiveStakeholder = (stakeholder?: Stakeholder) => () => {
+    public archiveStakeholder = (stakeholder?: Stakeholder): VoidCallback => (): void => {
         if (stakeholder) {
-            updateStakeholder({...stakeholder, archived: true})
-            .then((result: boolean) => {
-                if (result) {
-                    this.props.onUpdate(stakeholder.projectId);
+            updateStakeholder({ ...stakeholder, archived: true }).then(
+                (result: boolean): void => {
+                    if (result) {
+                        this.props.onUpdate(stakeholder.projectId);
+                    }
                 }
-            });
+            );
         }
-    }
+    };
 
-    closeStakeholderEditModal = () => {
-        this.setState({showModal: false});
+    public closeStakeholderEditModal = (): void => {
+        this.setState({ showModal: false });
     };
 
     public updateStakeholder = (values: DraftStakeholder, actions: FormikActions<DraftStakeholder>): void => {
         if (this.state.modalStakeholder) {
             const projectId = this.state.modalStakeholder.projectId;
-            updateStakeholder({...this.state.modalStakeholder, ...values}).then((result: boolean) => {
-                if (result) {
-                    actions.resetForm({
-                        projectId: projectId,
-                        name: values.name,
-                        company: values.company,
-                        attitude: values.attitude,
-                        role: values.role,
-                    });
+            updateStakeholder({ ...this.state.modalStakeholder, ...values }).then(
+                (result: boolean): void => {
+                    if (result) {
+                        actions.resetForm({
+                            projectId: projectId,
+                            name: values.name,
+                            company: values.company,
+                            attitude: values.attitude,
+                            role: values.role,
+                        });
 
-                    this.props.onUpdate(projectId);
+                        this.props.onUpdate(projectId);
+                    }
                 }
-            });
+            );
         }
     };
 
@@ -91,29 +96,46 @@ class StakeholderList extends Component<Props, State> {
             items.push(
                 <div key={`div-${stakeholder.id}`} className="entry">
                     <li key={stakeholder.id}>
-                        <Tooltip component={<StakeholderDetailTooltip stakeholder={stakeholder}/>} position={'left'}>
-                            <a onMouseEnter={this.selectTooltipStakeholder(stakeholder)}
-                               onMouseLeave={this.selectTooltipStakeholder(undefined)}>{stakeholderEntry}</a>
+                        <Tooltip component={<StakeholderDetailTooltip stakeholder={stakeholder} />} position={'left'}>
+                            <a
+                                onMouseEnter={this.selectTooltipStakeholder(stakeholder)}
+                                onMouseLeave={this.selectTooltipStakeholder(undefined)}
+                            >
+                                {stakeholderEntry}
+                            </a>
                         </Tooltip>
                     </li>
-                    <a key={`edit-${stakeholder.id}`} className="button-edit" onClick={this.openStakeholderEditModal(stakeholder)}>🖋️</a>
-                    <a key={`archive-${stakeholder.id}`} className="button-edit" onClick={this.archiveStakeholder(stakeholder)}>🗄️</a>
+                    <a
+                        key={`edit-${stakeholder.id}`}
+                        className="button-edit"
+                        onClick={this.openStakeholderEditModal(stakeholder)}
+                    >
+                        🖋️
+                    </a>
+                    <a
+                        key={`archive-${stakeholder.id}`}
+                        className="button-edit"
+                        onClick={this.archiveStakeholder(stakeholder)}
+                    >
+                        🗄️
+                    </a>
                 </div>
             );
         }
 
         return (
             <Fragment>
-                <ul id="stakeholder-list">
-                    {items}
-                </ul>
-                {this.state.showModal && <Modal>
-                    <StakeholderEdit closeEditModal={this.closeStakeholderEditModal}
-                                     onSubmit={this.updateStakeholder}
-                                     project={this.props.project}
-                                     stakeholder={this.state.modalStakeholder}
-                    />
-                </Modal>}
+                <ul id="stakeholder-list">{items}</ul>
+                {this.state.showModal && (
+                    <Modal>
+                        <StakeholderEdit
+                            closeEditModal={this.closeStakeholderEditModal}
+                            onSubmit={this.updateStakeholder}
+                            project={this.props.project}
+                            stakeholder={this.state.modalStakeholder}
+                        />
+                    </Modal>
+                )}
             </Fragment>
         );
     }
