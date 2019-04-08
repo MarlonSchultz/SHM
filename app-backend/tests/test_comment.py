@@ -1,4 +1,5 @@
 from unittest import mock
+from sqlalchemy.exc import OperationalError, ProgrammingError
 from app import app_object
 
 import app
@@ -19,9 +20,22 @@ def _db_session_add_side_effect(comment: app.comment.Comment):
     return comment
 
 
+def _raise_operational_error(*args, **kwargs):
+    raise OperationalError('', {}, '')
+
+
+def _raise_programming_error(*args, **kwargs):
+    raise ProgrammingError('', {}, '')
+
+
+def _raise_type_error(*args, **kwargs):
+    raise TypeError()
+
+
 class CommentCreationTestCase(unittest.TestCase):
 
     def setUp(self):
+        self.tester = app_object.test_client(self)
         self.stakeholder_id = 1
         self.user_id = 1
         self.comment_text = "Dies ist ein Kommentar"
@@ -37,10 +51,84 @@ class CommentCreationTestCase(unittest.TestCase):
         self.assertEqual(comment.text, self.comment_text)
         self.assertEqual(comment.id, 1)
 
+    @mock.patch("app.comment.create_comment")
+    def test_create_comment_endpoint(self, mock_create_comment):
+        mock_create_comment.return_value = app.comment.Comment(text=self.comment_text,
+                                                               stakeholder_id=self.stakeholder_id,
+                                                               user_id=self.user_id)
+
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}/comment', json={
+            'text': self.comment_text,
+            'user_id': 1,
+        })
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIn(member='Location', container=response.headers)
+
+    @mock.patch("app.comment.create_comment")
+    def test_create_comment_endpoint_missing_text(self, mock_create_comment):
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}/comment', json={
+            'user_id': 1,
+        })
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.data, b'Missing data: text')
+
+    @mock.patch("app.comment.create_comment")
+    def test_create_comment_endpoint_missing_user_id(self, mock_create_comment):
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}/comment', json={
+            'text': self.comment_text,
+        })
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.data, b'Missing data: user_id')
+
+    @mock.patch("app.comment.create_comment")
+    def test_create_comment_endpoint_no_json(self, mock_create_comment):
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}/comment', data=dict(
+            text=self.comment_text,
+            user_id=self.user_id
+        ))
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, b'Format: application/json expected')
+
+    @mock.patch("app.comment.create_comment")
+    def test_create_comment_endpoint_empty_json(self, mock_create_comment):
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}/comment', json={})
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.data, b'Missing data: text')
+
+    @mock.patch("app.comment.create_comment")
+    def test_create_comment_endpoint_no_database(self, mock_create_comment):
+        mock_create_comment.side_effect = _raise_operational_error
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}/comment', json={
+            'text': self.comment_text,
+            'user_id': self.user_id,
+        })
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not find comment')
+
+    @mock.patch("app.comment.create_comment")
+    def test_create_comment_endpoint_no_table(self, mock_create_comment):
+        mock_create_comment.side_effect = _raise_programming_error
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}/comment', json={
+            'text': self.comment_text,
+            'user_id': self.user_id,
+        })
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not find comment')
+
 
 class CommentListRetrievalTestCase(unittest.TestCase):
 
     def setUp(self):
+        self.tester = app_object.test_client(self)
         self.mock_comment = app.comment.Comment(id=1, text="Mein Kommentar", stakeholder_id=1, user_id=1)
 
     @mock.patch("app.comment.Comment")
@@ -53,3 +141,40 @@ class CommentListRetrievalTestCase(unittest.TestCase):
 
         self.assertEqual(len(comment_list), 2)
         self.assertEqual(comment_list, [self.mock_comment, self.mock_comment])
+
+    @mock.patch("app.comment.Comment")
+    def test_retrieve_comment_list_empty(self, mock_comment_model):
+        mock_comment_result = MockDatabaseModelResult()
+        mock_comment_result.results = []
+
+        mock_comment_model.query.filter_by.return_value = mock_comment_result
+        comment_list = app.comment.list_comments(stakeholder=1000000, user=9999)
+
+        self.assertEqual(comment_list, [])
+
+    @mock.patch("app.comment.list_comments")
+    def test_retrieve_comment_list_endpoint(self, mock_list_comments):
+        mock_list_comments.return_value = [self.mock_comment]
+        response = self.tester.get('/project/1/stakeholder/1/comment', content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, [self.mock_comment.to_json()])
+
+    @mock.patch("app.comment.list_comments")
+    def test_retrieve_comment_list_endpoint_no_database(self, mock_list_comments):
+        mock_list_comments.side_effect = _raise_operational_error
+        response = self.tester.get('/project/1/stakeholder/1/comment', content_type='application/json')
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not find comments')
+
+    @mock.patch("app.comment.list_comments")
+    def test_retrieve_comment_list_endpoint_no_table(self, mock_list_comments):
+        mock_list_comments.side_effect = _raise_programming_error
+        response = self.tester.get('/project/1/stakeholder/1/comment', content_type='application/json')
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not find comments')

@@ -17,6 +17,7 @@ from app import comment
 
 app_object.register_blueprint(project.project_api)
 app_object.register_blueprint(stakeholder.stakeholder_api)
+app_object.register_blueprint(comment.comment_api)
 
 
 @app_object.route('/')
