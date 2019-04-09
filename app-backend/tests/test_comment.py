@@ -178,3 +178,117 @@ class CommentListRetrievalTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.is_json, True)
         self.assertEqual(response.json, 'Could not find comments')
+
+
+class CommentUpdateTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.tester = app_object.test_client(self)
+        self.mock_comment = app.comment.Comment(id=1, text="Text", stakeholder_id=1, user_id=1)
+
+        self.comment_id = 1
+        self.stakeholder_id = 2
+        self.user_id = 2
+        self.text = "Updated Text"
+
+    @mock.patch("app.comment.Comment")
+    @mock.patch("app.db.session.commit")
+    def test_update_comment_all_values(self, mock_db_session_commit, mock_comment_model):
+        mock_comment_model.query.get.return_value = self.mock_comment
+        comment = app.comment.update_comment(id=self.comment_id, text=self.text, stakeholder_id=self.stakeholder_id,
+                                             user_id=self.user_id)
+
+        self.assertEqual(comment.id, self.comment_id)
+        self.assertEqual(comment.text, self.text)
+        self.assertEqual(comment.stakeholder_id, self.stakeholder_id)
+        self.assertEqual(comment.user_id, self.user_id)
+
+    @mock.patch("app.comment.Comment")
+    @mock.patch("app.db.session.commit")
+    def test_update_comment_invalid_stakeholder_id(self, mock_db_session_commit, mock_comment_model):
+        mock_comment_model.query.get.return_value = self.mock_comment
+
+        self.assertRaises(KeyError, app.comment.update_comment, 1, 'Updated Text', stakeholder_id=0, user_id=1)
+        self.assertRaises(KeyError, app.comment.update_comment, 1, 'Updated Text', stakeholder_id=-102, user_id=1)
+        self.assertRaises(KeyError, app.comment.update_comment, 1, 'Updated Text', stakeholder_id='wurst', user_id=1)
+
+    @mock.patch("app.comment.Comment")
+    @mock.patch("app.db.session.commit")
+    def test_update_comment_invalid_user_id(self, mock_db_session_commit, mock_comment_model):
+        mock_comment_model.query.get.return_value = self.mock_comment
+
+        self.assertRaises(KeyError, app.comment.update_comment, 1, 'Updated Text', stakeholder_id=1, user_id=0)
+        self.assertRaises(KeyError, app.comment.update_comment, 1, 'Updated Text', stakeholder_id=1, user_id=-222)
+        self.assertRaises(KeyError, app.comment.update_comment, 1, 'Updated Text', stakeholder_id=1, user_id='käse')
+
+    @mock.patch("app.comment.Comment")
+    @mock.patch("app.db.session.commit")
+    def test_update_comment_wrong_id_type(self, mock_db_session_commit, mock_comment_model):
+        mock_comment_model.query.get.side_effect = _raise_type_error
+        comment = app.comment.update_comment(None, 'Updated Text', stakeholder_id=1, user_id=1)
+
+        self.assertIsNone(comment)
+
+    @mock.patch("app.comment.Comment")
+    @mock.patch("app.db.session.commit")
+    def test_update_comment_wrong_or_unknown_comment(self, mock_db_session_commit, mock_comment_model):
+        mock_comment_model.query.get.return_value = None
+        self.assertRaises(OperationalError, app.comment.update_comment, 123123123, 'Updated Text', stakeholder_id=1,
+                          user_id=1)
+
+    @mock.patch("app.comment.update_comment")
+    def test_update_comment_endpoint(self, mock_update_comment):
+        mock_update_comment.return_value = app.comment.Comment(id=self.comment_id,
+                                                               text=self.text,
+                                                               stakeholder_id=self.stakeholder_id,
+                                                               user_id=self.user_id)
+
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}/comment/{self.comment_id}', json={
+            'text': self.text,
+            'user_id': self.user_id,
+        })
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIn(member='Location', container=response.headers)
+        self.assertEqual(response.headers['Location'], f'http://localhost/project/1/stakeholder/{self.stakeholder_id}/comment/{self.comment_id}')
+
+    @mock.patch("app.comment.update_comment")
+    def test_update_comment_endpoint_empty_json(self, mock_update_comment):
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}/comment/{self.comment_id}', json={})
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.data, b'Missing data: text')
+
+    @mock.patch("app.comment.update_comment")
+    def test_update_comment_endpoint_no_json(self, mock_update_comment):
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}/comment/{self.comment_id}', data=dict(
+            text=self.text,
+            user_id=self.user_id,
+        ))
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, b'Format: application/json expected')
+
+    @mock.patch("app.comment.update_comment")
+    def test_update_comment_endpoint_no_database(self, mock_update_comment):
+        mock_update_comment.side_effect = _raise_operational_error
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}/comment/{self.comment_id}', json={
+            'text': self.text,
+            'user_id': self.user_id
+        })
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not find comment')
+
+    @mock.patch("app.comment.update_comment")
+    def test_update_comment_endpoint_no_table(self, mock_update_comment):
+        mock_update_comment.side_effect = _raise_programming_error
+        response = self.tester.post(f'/project/1/stakeholder/{self.stakeholder_id}/comment/{self.comment_id}', json={
+            'text': self.text,
+            'user_id': self.user_id
+        })
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.is_json, True)
+        self.assertEqual(response.json, 'Could not find comment')

@@ -36,6 +36,29 @@ def list_comments(stakeholder: int, user: int) -> list:
 comment_api = Blueprint('Comment API', __name__)
 
 
+def update_comment(id: int, text: str, stakeholder_id: int, user_id: int) -> Comment or None:
+    try:
+        comment = Comment.query.get(id)  # type: Comment
+
+        if not isinstance(stakeholder_id, int) or stakeholder_id < 1:
+            raise KeyError('Invalid stakeholder id')
+
+        if not isinstance(user_id, int) or user_id < 1:
+            raise KeyError('Invalid user id')
+
+        comment.text = text
+        comment.stakeholder_id = stakeholder_id
+        comment.user_id = user_id
+
+        db.session.commit()
+
+        return comment
+    except AttributeError:
+        raise OperationalError(f"Could not load comment with id {id}", {}, '')
+    except TypeError:
+        return None
+
+
 @comment_api.route('/project/<project_id>/stakeholder/<stakeholder_id>/comment', methods=['POST'])
 def post_comment(project_id: int, stakeholder_id: int):
     try:
@@ -43,7 +66,8 @@ def post_comment(project_id: int, stakeholder_id: int):
         comment = create_comment(text=json_data['text'], stakeholder_id=stakeholder_id, user_id=json_data['user_id'])
 
         return Response(status='201 Created',
-                        headers={'Location': f'/project/{project_id}/stakeholder/{stakeholder_id}/comment/{comment.id}'})
+                        headers={
+                            'Location': f'/project/{project_id}/stakeholder/{stakeholder_id}/comment/{comment.id}'})
     except KeyError as error:
         return Response(response=f"Missing data: {', '.join(error.args)}", status='422 Unprocessable Entity')
     except TypeError as error:
@@ -64,3 +88,23 @@ def get_comment_list(project_id: int, stakeholder_id: int):
         return jsonify('Could not find comments'), 500
     except ProgrammingError:  # Table not found
         return jsonify('Could not find comments'), 500
+
+
+@comment_api.route('/project/<project_id>/stakeholder/<stakeholder_id>/comment/<comment_id>', methods=['POST'])
+def update_existing_comment(project_id: int, stakeholder_id: int, comment_id: int):
+    try:
+        json_data = request.get_json()
+        comment = update_comment(id=comment_id, text=json_data['text'], stakeholder_id=stakeholder_id,
+                                 user_id=json_data['user_id'])
+
+        return Response(status='201 Created', headers={
+            'Location': f'/project/{project_id}/stakeholder/{stakeholder_id}/comment/{comment_id}'
+        })
+    except KeyError as error:
+        return Response(response=f"Missing data: {', '.join(error.args)}", status='422 Unprocessable Entity')
+    except TypeError as error:
+        return Response(response="Format: application/json expected", status='400 Bad Request')
+    except OperationalError:
+        return jsonify('Could not find comment'), 500
+    except ProgrammingError:
+        return jsonify('Could not find comment'), 500
